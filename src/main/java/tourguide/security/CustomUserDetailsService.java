@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
+import tourguide.exception.UnAuthorizeException;
 import tourguide.model.User;
 
 import tourguide.repository.UserRepository;
@@ -38,6 +39,17 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 //        return new org.springframework.security.core.userdetails.User(userFind.get().getEmail(),
 //                userFind.get().getPassword(), new ArrayList<>());
+        return UserDetailsImpl.build(userFind.get());
+    }
+
+    public UserDetails loadById(Long id){
+        Optional<User> userFind = userRepository.findById(id);
+
+        if (userFind.isEmpty()) {
+            System.out.println("User not found in database");
+            throw new UnAuthorizeException("Unauthorized!!!");
+
+        }
         return UserDetailsImpl.build(userFind.get());
     }
 

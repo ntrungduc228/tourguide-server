@@ -1,9 +1,9 @@
 package tourguide.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import tourguide.security.UserDetailsImpl;
@@ -13,7 +13,10 @@ import java.util.Date;
 
 @Service
 public class JwtUtil {
-    private static final int expireInMs = 60 * 1000 * 1000 * 24;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+//    private static final int expireInMs = 60 * 1000 * 1000 * 24;
+    private static final int expireInMs =  1000*60*5;
 
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private String secret = "secret";
@@ -41,16 +44,39 @@ public class JwtUtil {
                 .compact();
     }
     public boolean validate(String token) {
-        if (getUsername(token) != null && isExpired(token)) {
+        if (getUserId(token) != null && isExpired(token)) {
             return true;
         }
         return false;
     }
 
-    public String getUsername(String token) {
-        Claims claims = getClaims(token);
-        return claims.getSubject();
+    public boolean validateJwtToken(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parse(authToken);
+            return true;
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        }
+
+        return false;
     }
+
+    public Long getUserId(String token) {
+        Claims claims = getClaims(token);
+        String id = claims.getSubject();
+        return Long.valueOf(id);
+    }
+
+//    public String getUsername(String token) {
+//        Claims claims = getClaims(token);
+//        return claims.getSubject();
+//    }
 
     public boolean isExpired(String token) {
         Claims claims = getClaims(token);

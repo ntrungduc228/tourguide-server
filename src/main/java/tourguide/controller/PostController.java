@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.Post;
 import tourguide.payload.PostDto;
+import tourguide.payload.ResponseDTO;
 import tourguide.service.PostService;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class PostController {
 //    @PreAuthorize("hasRole('TOURIST')")
     public ResponseEntity<?> getPosts() {
         List<Post> lists = postService.getPosts();
-        return new ResponseEntity<>(lists, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDTO(lists), HttpStatus.OK);
     }
 
     @PostMapping("")
