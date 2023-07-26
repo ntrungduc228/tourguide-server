@@ -20,7 +20,7 @@ public class PostController {
     PostService postService;
 
     @GetMapping("")
-//    @PreAuthorize("hasRole('TOURIST')")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getPosts() {
         List<Post> lists = postService.getPosts();
         return new ResponseEntity<>(new ResponseDTO(lists), HttpStatus.OK);

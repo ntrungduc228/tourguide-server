@@ -37,7 +37,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         // Fetching user as wrapped with UserDetails object
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        System.out.println("user detail " + userDetails.getUsername());
 
         // If user is not null, then we check if password matches
         if (userDetails != null){

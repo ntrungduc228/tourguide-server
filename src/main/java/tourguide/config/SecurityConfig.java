@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,7 +21,7 @@ import tourguide.security.provider.JwtAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
     @Autowired
     JwtFilter jwtFilter;
@@ -37,6 +38,12 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // Custom default prefix ROLE
+    @Bean
+    static GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
     }
 
     // adding our custom authentication providers
@@ -57,7 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                         authorize
                                 .requestMatchers("/").permitAll()
-                                .requestMatchers("/api/auth/**", "users").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
                                 .anyRequest().authenticated());
 
 
