@@ -33,7 +33,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = String.valueOf(authentication.getCredentials());
 
-        System.out.println("jwt provider " + username);
 
         // Fetching user as wrapped with UserDetails object
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

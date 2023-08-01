@@ -1,11 +1,15 @@
 package tourguide.utils;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tourguide.security.UserDetailsImpl;
 
 import java.security.Key;
@@ -15,21 +19,26 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
-//    private static final int expireInMs = 60 * 1000 * 1000 * 24;
-    private static final int expireInMs =  1000*60*5;
+    private static final int expireInMs = 60 * 1000 * 1000 * 24;
+//    private static final int expireInMs =  1000*60*5;
 
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private String secret = "secret";
+
+    private String getSignInKey() {
+//        return Encoders.BASE64.encode(key.getEncoded());
+        return "gnS6HR90tK7IZxsLzXkQRMtND54jGSfJh6nCjPo7iLs=";
+    }
 
     public String generateToken(Authentication authentication) {
+        System.out.println("key " +getSignInKey());
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println("key " + userDetails.getId() + userDetails.getEmail());
         return Jwts.builder()
                 .setSubject(String.valueOf(userDetails.getId()))
                 .setIssuer("tourguide")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireInMs))
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(SignatureAlgorithm.HS256, getSignInKey())
+//                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
@@ -40,7 +49,8 @@ public class JwtUtil {
                 .setIssuer("tourguide")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireInMs))
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(SignatureAlgorithm.HS256, getSignInKey())
+//                .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
     public boolean validate(String token) {
@@ -50,9 +60,17 @@ public class JwtUtil {
         return false;
     }
 
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7, bearerToken.length());
+        }
+        return null;
+    }
+
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parse(authToken);
+            Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parse(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
@@ -84,6 +102,6 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(getSignInKey()).parseClaimsJws(token).getBody();
     }
 }

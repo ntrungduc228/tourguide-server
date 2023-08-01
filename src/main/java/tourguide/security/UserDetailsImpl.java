@@ -26,7 +26,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user){
         List<GrantedAuthority> authorities = Collections.
                 singletonList(new SimpleGrantedAuthority(String.valueOf(user.getRole())));
-        System.out.println("sdf " + String.valueOf(user.getRole()));
+        System.out.println("role " + String.valueOf(user.getRole()));
         return new UserDetailsImpl(user.getId(), user.getEmail(), user.getPassword(), authorities);
     }
 
