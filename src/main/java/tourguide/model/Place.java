@@ -1,27 +1,27 @@
 package tourguide.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Tour extends TimeStamps {
+public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String description;
 
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<Place> places;
+    private String name;
+    private String address;
+    private String content;
+
+    @ManyToOne()
+    @JoinColumn(name="tourId", referencedColumnName = "id")
+    private Tour tour;
 }
