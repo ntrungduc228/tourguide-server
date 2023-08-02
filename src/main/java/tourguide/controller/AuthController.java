@@ -8,10 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.User;
-import tourguide.payload.AuthDTO;
-import tourguide.payload.LoginDTO;
-import tourguide.payload.TokenDTO;
-import tourguide.payload.UserDTO;
+import tourguide.payload.*;
 import tourguide.service.UserService;
 import tourguide.utils.JwtUtil;
 
@@ -41,7 +38,7 @@ public class AuthController {
     @PostMapping("signup")
     public ResponseEntity<?> signUp(@RequestBody AuthDTO authDTO){
         UserDTO userDTO = userService.signUp(authDTO);
-        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDTO(userDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("{email}")

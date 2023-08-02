@@ -12,12 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User {
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"email"})})
+public class User extends TimeStamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
+    private String fullName;
     private String email;
     private String password;
     private Role role;
+    private String address;
+    private String phone;
 }

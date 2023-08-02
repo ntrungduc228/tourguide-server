@@ -25,8 +25,15 @@ public class UserService {
         user.setEmail(authDTO.getEmail());
         user.setPassword(passwordEncoder.encode(authDTO.getPassword()));
         user.setRole(Role.TOURIST);
+        user.setFullName(authDTO.getFullName());
+        user.setPhone(authDTO.getPhone());
+        user.setAddress(authDTO.getAddress());
         User newUser= userRepository.save(user);
-        UserDTO userDTO = new UserDTO(newUser.getId(), newUser.getEmail());
+        UserDTO userDTO = new UserDTO(newUser.getId(),
+                newUser.getEmail(),
+                newUser.getFullName(),
+                newUser.getPhone(),
+                newUser.getAddress());
         return userDTO;
     }
 
