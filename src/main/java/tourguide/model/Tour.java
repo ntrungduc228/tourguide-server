@@ -23,5 +23,8 @@ public class Tour extends TimeStamps {
     private String description;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<Place> places;
+    private List<Destination> destinations;
+
+    @OneToMany(mappedBy = "roomTour", cascade = CascadeType.ALL)
+    private List<Room> rooms;
 }

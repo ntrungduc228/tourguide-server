@@ -1,27 +1,21 @@
-package tourguide.model;
+package tourguide.payload;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Place {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DestinationDTO {
     private Long id;
-
     private String name;
     private String address;
     private String content;
+    private LocalDateTime departureTime;
 
-    @ManyToOne()
-    @JoinColumn(name="tourId", referencedColumnName = "id")
-    private Tour tour;
 }
