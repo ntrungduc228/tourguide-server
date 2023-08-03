@@ -149,6 +149,17 @@ public class TourService {
         return tour;
     }
 
+    public boolean checkUserIsInTour(Tour tour, User user){
+        if(tour.getRooms() != null){
+            for(Room room: tour.getRooms()){
+                if(room.getRoomUser().getId() == user.getId()){
+                    return  true;
+                }
+            }
+        }
+        return false;
+    }
+
     public Tour joinRoom(Long tourId, Long userId){
         Tour tour = findById(tourId);
         for(Room roomTour : tour.getRooms()){
