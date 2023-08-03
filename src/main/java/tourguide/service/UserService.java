@@ -20,6 +20,19 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    public User findById(Long id){
+        Optional<User> opUser = userRepository.findById(id);
+        if(opUser.isEmpty()){
+            throw new NotFoundException("Không tìm thấy người dùng");
+        }
+        return opUser.get();
+    }
+
+    public boolean checkEmailExist(String email){
+        Optional<User> opUser = userRepository.findByEmail(email);
+        return opUser.isPresent() ? true : false;
+    }
+
     public UserDTO signUp(AuthDTO authDTO){
         User user = new User();
         user.setEmail(authDTO.getEmail());

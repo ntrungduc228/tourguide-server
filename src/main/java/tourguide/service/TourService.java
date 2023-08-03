@@ -2,11 +2,15 @@ package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
 import tourguide.model.Destination;
+import tourguide.model.Room;
 import tourguide.model.Tour;
+import tourguide.model.User;
 import tourguide.payload.DestinationDTO;
+import tourguide.payload.MemberDTO;
 import tourguide.payload.TourDTO;
 import tourguide.repository.TourRepository;
 
@@ -22,7 +26,20 @@ public class TourService {
     @Autowired
     TourRepository tourRepository;
 
-    public Tour createTour(TourDTO tourDTO){
+    @Autowired
+    RoomService roomService;
+
+    public Tour getTourById(Long id,Long userId){
+        Tour tour = findById(id);
+        for(Room room:tour.getRooms()){
+            if(room.getRoomUser().getId() == userId){
+                return tour;
+            }
+        }
+        throw new BadRequestException("Không thể lấy thông tin tour");
+    }
+
+    public Tour createTour(TourDTO tourDTO, Long touristGuideId){
         if(tourDTO.getDestinations() == null || tourDTO.getDestinations().isEmpty() ){
             throw new BadRequestException("Vui lòng bổ sung lịch trình");
         }
@@ -41,7 +58,11 @@ public class TourService {
         }
         tour.setDestinations(list);
 
-        return tourRepository.save(tour);
+        Tour newTour = tourRepository.save(tour);
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(touristGuideId);
+        addMembers(newTour.getId(), new MemberDTO(userIds));
+        return newTour;
     }
 
     public Tour findById(Long id){
@@ -109,5 +130,82 @@ public class TourService {
          tourRepository.deleteById(id);
         return true;
     }
+
+    @Transactional
+    public Tour addMembers(Long tourId, MemberDTO memberDTO){
+        if(memberDTO.getUserIds() == null || memberDTO.getUserIds().size() <1){
+            throw new BadRequestException("Vui lòng cung cấp đủ dữ liệu");
+        }
+        Tour tour = findById(tourId);
+        for(Long userId: memberDTO.getUserIds()){
+            for(Room oldRoom : tour.getRooms()){
+                if(oldRoom.getRoomUser().getId() == userId){
+                    throw new BadRequestException(oldRoom.getRoomUser().getFullName() +" đã ở trong phòng");
+                }
+            }
+            Room room = roomService.createRoom(userId, tour);
+            tour.getRooms().add(room);
+        }
+        return tour;
+    }
+
+    public Tour joinRoom(Long tourId, Long userId){
+        Tour tour = findById(tourId);
+        for(Room roomTour : tour.getRooms()){
+           if(roomTour.getRoomUser().getId() == userId){
+               if(roomTour.getIsApproved()){
+                   throw new BadRequestException("Bạn đã vô phòng");
+               }
+               throw new BadRequestException("Bạn đã xin vô phòng");
+           }
+        }
+        Room room = roomService.joinRoom(userId, tour);
+        tour.getRooms().add(room);
+        return tour;
+    }
+
+    @Transactional
+    public Tour approveMember(Long tourId, MemberDTO memberDTO){
+        if(memberDTO.getUserIds() == null || memberDTO.getUserIds().size() <1){
+            throw new BadRequestException("Vui lòng cung cấp đủ dữ liệu");
+        }
+
+        Tour tour = findById(tourId);
+        List<Room> rooms = tour.getRooms();
+        for(Long userId: memberDTO.getUserIds()){
+            for(Room roomTour: rooms){
+                if(roomTour.getRoomUser().getId() == userId){
+                    roomTour.setIsApproved(true);break;
+                }
+            }
+        }
+        tour.setRooms(rooms);
+        return tourRepository.save(tour);
+    }
+
+    public Tour outRoom(Long tourId, Long userId){
+        Tour tour = findById(tourId);
+        long roomId = 0;
+        for(int i=0; i<tour.getRooms().size();i++){
+            if(tour.getRooms().get(i).getRoomUser().getId() == userId){
+                roomId = tour.getRooms().get(i).getId();
+                tour.getRooms().remove(i);
+                break;
+            }
+        }
+        Tour newTour=  tourRepository.save(tour);
+        roomService.deleteMember(roomId);
+        return newTour;
+    }
+
+    public Tour removeMembers(Long tourId, MemberDTO memberDTO){
+        Tour tour = findById(tourId);
+        Tour newTour = tour;
+        for(Long userId:memberDTO.getUserIds()){
+            newTour = outRoom(tourId, userId);
+        }
+        return newTour;
+    }
+
 
 }
