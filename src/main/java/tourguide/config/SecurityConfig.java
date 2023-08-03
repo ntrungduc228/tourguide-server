@@ -60,7 +60,7 @@ public class SecurityConfig {
         httpSecurity
                 .cors().and()
                 .csrf((csrf) -> csrf.disable())
-//                .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthEntryPointJwt()))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthEntryPointJwt()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) ->
                         authorize
