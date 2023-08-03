@@ -66,6 +66,7 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/gs/**").permitAll()
                                 .anyRequest().authenticated());
 
 
