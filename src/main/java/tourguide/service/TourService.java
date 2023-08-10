@@ -29,6 +29,10 @@ public class TourService {
     @Autowired
     RoomService roomService;
 
+//    public List<Tour> getListTourByUserId(Long userId){
+//
+//    }
+
     public Tour getTourById(Long id,Long userId){
         Tour tour = findById(id);
         for(Room room:tour.getRooms()){

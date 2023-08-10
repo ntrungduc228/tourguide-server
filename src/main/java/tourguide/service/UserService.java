@@ -20,6 +20,18 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    public UserDTO getInfo(Long id){
+        User user = findById(id);
+        UserDTO userDTO = new UserDTO().builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .address(user.getAddress())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .build();
+        return userDTO;
+    }
+
     public User findById(Long id){
         Optional<User> opUser = userRepository.findById(id);
         if(opUser.isEmpty()){
@@ -42,11 +54,13 @@ public class UserService {
         user.setPhone(authDTO.getPhone());
         user.setAddress(authDTO.getAddress());
         User newUser= userRepository.save(user);
-        UserDTO userDTO = new UserDTO(newUser.getId(),
-                newUser.getEmail(),
-                newUser.getFullName(),
-                newUser.getPhone(),
-                newUser.getAddress());
+        UserDTO userDTO = new UserDTO().builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .address(user.getAddress())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .build();
         return userDTO;
     }
 
