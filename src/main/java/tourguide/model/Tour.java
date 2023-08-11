@@ -21,6 +21,7 @@ public class Tour extends TimeStamps {
     private Long id;
     private String name;
     private String description;
+    private Boolean isProgress;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Destination> destinations;
