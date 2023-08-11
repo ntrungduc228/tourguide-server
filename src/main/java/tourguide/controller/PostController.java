@@ -33,6 +33,7 @@ public class PostController {
     @PostMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> createPost(@RequestBody PostDTO postDto, HttpServletRequest request){
+        System.out.println(postDto);
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         PostDTO post = postService.createPost(postDto, userId);
         return new ResponseEntity<>(post, HttpStatus.CREATED);

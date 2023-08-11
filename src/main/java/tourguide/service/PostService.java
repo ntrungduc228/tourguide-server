@@ -57,6 +57,8 @@ public class PostService {
         if(postDTO.getFiles()!= null){
             List<File> fileList = buildFiles(postDTO.getFiles(), post);
             post.setFiles(fileList);
+        }else {
+            System.out.println("file null");
         }
         Post newPost = postRepository.save(post);
 
@@ -67,8 +69,8 @@ public class PostService {
         List<File> fileList = new ArrayList<>();
         for(FileDTO fileDTO : fileDTOS){
             File file = new File();
+            System.out.println("link " + fileDTO.getLink());
             file.setLink(fileDTO.getLink());
-            file.setType(fileDTO.getFileType());
             file.setPostFile(post);
             fileList.add(file);
         }
@@ -80,7 +82,7 @@ public class PostService {
             List<FileDTO> filesReturn = new ArrayList<>();
             if(post.getFiles()!= null){
                 for (File file : post.getFiles()){
-                    FileDTO fileDTO = new FileDTO(file.getId(), file.getLink(), file.getType(), file.getCreatedAt(), file.getLastModifiedDate());
+                    FileDTO fileDTO = new FileDTO(file.getId(), file.getLink(),  file.getCreatedAt(), file.getLastModifiedDate());
                     filesReturn.add(fileDTO);
                 }
             }
