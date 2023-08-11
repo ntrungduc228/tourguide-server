@@ -20,6 +20,7 @@ public class User extends TimeStamps{
     private String fullName;
     private String email;
     private String password;
+    private String avatar;
 
 //    @Enumerated(EnumType.STRING)
     private Role role;

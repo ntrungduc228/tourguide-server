@@ -16,5 +16,6 @@ public class UserDTO extends TimeStampsDTO{
     private String phone;
     private String address;
     private Role role;
+    private String avatar;
 
 }

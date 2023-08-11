@@ -1,5 +1,6 @@
 package tourguide.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Entity
 public class Comment extends TimeStamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +25,7 @@ public class Comment extends TimeStamps{
     @JoinColumn(name="tourId", referencedColumnName = "id")
     private Tour tour;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="postId", referencedColumnName = "id")
     private Post post;

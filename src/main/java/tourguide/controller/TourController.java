@@ -39,7 +39,7 @@ public class TourController {
     public ResponseEntity<?> getTourInfo(@PathVariable Long id, HttpServletRequest request){
        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.getTourById(id, userId);
-       return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+       return new ResponseEntity<>(tour, HttpStatus.OK);
 
    }
 
@@ -48,20 +48,20 @@ public class TourController {
     public ResponseEntity<?> createTour(@RequestBody TourDTO tourDTO, HttpServletRequest request){
        Long touristGuideId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.createTour(tourDTO, touristGuideId);
-       return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.CREATED);
+       return new ResponseEntity<>(tour, HttpStatus.CREATED);
    }
 
    @PatchMapping("{id}")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> updateTour(@PathVariable Long id, @RequestBody TourDTO tourDTO){
         Tour tour = tourService.updateTour(id, tourDTO);
-        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+        return new ResponseEntity<>(tour, HttpStatus.OK);
    }
 
    @DeleteMapping("{id}")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> deleteTour(@PathVariable Long id){
-       return new ResponseEntity<>(new ResponseDTO(tourService.deleteTour(id)), HttpStatus.OK);
+       return new ResponseEntity<>(tourService.deleteTour(id), HttpStatus.OK);
    }
 
    @PostMapping("{id}/members/add")
@@ -83,7 +83,7 @@ public class TourController {
     public ResponseEntity<?> joinRoom(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.joinRoom(id, userId);
-        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+        return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 
     @PatchMapping("{id}/members/approve")
@@ -98,7 +98,7 @@ public class TourController {
     public ResponseEntity<?> outRoom(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.outRoom(id, userId);
-        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+        return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 
     @GetMapping("{id}/members")
