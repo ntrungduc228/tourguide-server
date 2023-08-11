@@ -33,6 +33,10 @@ public class Post extends TimeStamps{
 
     @OneToMany(mappedBy = "postFile", cascade = CascadeType.ALL)
     private List<File> files;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
     private Integer likes;
     Boolean isDelete;
 }

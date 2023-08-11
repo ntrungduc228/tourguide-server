@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 public class FileDTO extends TimeStampsDTO{
     private Long id;
     private String link;
-    private FileType fileType;
 
-    public FileDTO(Long id, String link, FileType type, LocalDateTime createdAt, LocalDateTime lastModifiedDate) {
+    public FileDTO(Long id, String link, LocalDateTime createdAt, LocalDateTime lastModifiedDate) {
+        this.link = link;
         this.id = id;
-        this.fileType = type;
         this.setCreatedAt(createdAt);
         this.setLastModifiedDate(lastModifiedDate);
     }

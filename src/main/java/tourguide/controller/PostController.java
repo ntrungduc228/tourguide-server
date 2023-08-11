@@ -50,6 +50,6 @@ public class PostController {
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getPostsByTourId(@RequestParam("tour") Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
-        return new ResponseEntity<>(postService.getPostsByTourId(id, userId), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDTO(postService.getPostsByTourId(id, userId)), HttpStatus.OK);
     }
 }

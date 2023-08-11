@@ -22,7 +22,7 @@ public class File extends TimeStamps{
     @JoinColumn(name="postId", referencedColumnName = "id")
     private Post postFile;
 
-    private FileType type;
+//    private FileType type;
 
     private String link;
 }

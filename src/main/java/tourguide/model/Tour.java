@@ -1,6 +1,7 @@
 package tourguide.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Tour extends TimeStamps {
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Destination> destinations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "roomTour", cascade = CascadeType.ALL)
     private List<Room> rooms;
 }

@@ -10,6 +10,7 @@ import tourguide.model.Tour;
 import tourguide.model.User;
 import tourguide.payload.FileDTO;
 import tourguide.payload.PostDTO;
+import tourguide.payload.UserDTO;
 import tourguide.repository.PostRepository;
 
 import java.util.ArrayList;
@@ -68,7 +69,6 @@ public class PostService {
         for(FileDTO fileDTO : fileDTOS){
             File file = new File();
             file.setLink(fileDTO.getLink());
-            file.setType(fileDTO.getFileType());
             file.setPostFile(post);
             fileList.add(file);
         }
@@ -80,7 +80,7 @@ public class PostService {
             List<FileDTO> filesReturn = new ArrayList<>();
             if(post.getFiles()!= null){
                 for (File file : post.getFiles()){
-                    FileDTO fileDTO = new FileDTO(file.getId(), file.getLink(), file.getType(), file.getCreatedAt(), file.getLastModifiedDate());
+                    FileDTO fileDTO = new FileDTO(file.getId(), file.getLink(), file.getCreatedAt(), file.getLastModifiedDate());
                     filesReturn.add(fileDTO);
                 }
             }
@@ -88,7 +88,17 @@ public class PostService {
             PostDTO postReturn = new PostDTO(post.getId(), post.getContent(),
                     filesReturn,
                     post.getIsDelete(),
-                    post.getTour().getId(), post.getUser().getId(), post.getLikes(), post.getCreatedAt(), post.getLastModifiedDate());
+                    post.getTour().getId(), post.getUser().getId(),
+                    new UserDTO().builder()
+                            .email(post.getUser().getEmail())
+                            .role(post.getUser().getRole())
+                            .phone(post.getUser().getPhone())
+                            .address(post.getUser().getAddress())
+                            .avatar(post.getUser().getAvatar())
+                            .build(),
+                    post.getLikes(),
+                    post.getComments().size(),
+                    post.getCreatedAt(), post.getLastModifiedDate());
             return postReturn;
         }
         throw new BadRequestException("Đã có lỗi");

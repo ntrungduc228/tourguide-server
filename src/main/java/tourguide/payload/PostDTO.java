@@ -15,16 +15,23 @@ public class PostDTO extends TimeStampsDTO{
     private List<FileDTO> files;
     private Long tourId;
     private Long userId;
+    private UserDTO user;
     private Boolean isDelete;
     private int likes;
+    private Integer comments;
 
-    public PostDTO(Long id, String content, List<FileDTO> filesReturn, Boolean isDelete, Long tourId, Long userId, Integer likes, LocalDateTime createdAt, LocalDateTime lastModifiedDate) {
+    public PostDTO(Long id, String content, List<FileDTO> filesReturn, Boolean isDelete, Long tourId, Long userId, UserDTO user,
+                   Integer likes,
+                   Integer comments,
+                   LocalDateTime createdAt, LocalDateTime lastModifiedDate) {
         this.id = id;
         this.content = content;
         this.files = filesReturn;
         this.tourId = tourId;
         this.userId = userId;
         this.likes = likes;
+        this.user=  user;
+        this.comments = comments;
         this.isDelete = isDelete;
         this.setCreatedAt(createdAt);
         this.setLastModifiedDate(lastModifiedDate);
