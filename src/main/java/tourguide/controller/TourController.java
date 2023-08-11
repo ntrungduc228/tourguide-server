@@ -8,11 +8,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.Tour;
+import tourguide.model.User;
 import tourguide.payload.MemberDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.payload.TourDTO;
 import tourguide.service.TourService;
 import tourguide.utils.JwtUtil;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/tours")
@@ -96,5 +99,13 @@ public class TourController {
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.outRoom(id, userId);
         return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/members")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> getMembers(@PathVariable Long id){
+        System.out.println(id);
+        List<User> users = tourService.getMembers(id);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

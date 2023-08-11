@@ -231,5 +231,12 @@ public class TourService {
         return newTour;
     }
 
-
+    public List<User> getMembers(Long id){
+        Tour tour = findById(id);
+        List<User> users = new ArrayList<>();
+        for(Room room:tour.getRooms()){
+            users.add(room.getRoomUser());
+        }
+        return users;
+    }
 }
