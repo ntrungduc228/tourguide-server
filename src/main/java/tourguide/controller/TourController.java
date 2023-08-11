@@ -24,6 +24,13 @@ public class TourController {
    @Autowired
     TourService tourService;
 
+   @GetMapping("own")
+   @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+   public ResponseEntity<?> getListToursByUserId(HttpServletRequest request){
+       Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+       return new ResponseEntity<>(new ResponseDTO(tourService.getListTourByUserId(userId)), HttpStatus.OK);
+   }
+
    @GetMapping("{id}")
    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getTourInfo(@PathVariable Long id, HttpServletRequest request){

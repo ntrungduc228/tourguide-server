@@ -11,6 +11,7 @@ import tourguide.model.User;
 import tourguide.payload.MemberDTO;
 import tourguide.repository.RoomRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,12 @@ public class RoomService {
 //    @Autowired
 //    TourService tourService;
 
+    public List<Room> getListRoomByUserId(Long userId){
+        User user = userService.findById(userId);
+        List<Room> rooms = roomRepository.findByRoomUser(user);
+        return rooms;
+    }
+
     public Room findById(Long id){
         Optional<Room> optionalRoom = roomRepository.findById(id);
         if(optionalRoom.isEmpty()){
@@ -31,6 +38,9 @@ public class RoomService {
         }
         return optionalRoom.get();
     }
+
+
+
 
     public Room createRoom(Long userId, Tour tour){
         User user = userService.findById(userId);
