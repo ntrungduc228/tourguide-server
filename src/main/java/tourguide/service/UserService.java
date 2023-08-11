@@ -10,6 +10,7 @@ import tourguide.payload.AuthDTO;
 import tourguide.payload.UserDTO;
 import tourguide.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,5 +71,13 @@ public class UserService {
             throw new NotFoundException("user not found");
         }
         return user.get();
+    }
+
+    public List<User> findByPhone(String phone) throws Exception {
+        List<User> users = userRepository.findByPhoneStartingWith(phone);
+        if(users.size()==0 ){
+            throw new NotFoundException("user not found");
+        }
+        return users;
     }
 }

@@ -72,9 +72,9 @@ public class TourService {
         tour.setDestinations(list);
 
         Tour newTour = tourRepository.save(tour);
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(touristGuideId);
-        addMembers(newTour.getId(), new MemberDTO(userIds));
+//        List<Long> userIds = new ArrayList<>();
+//        userIds.add(touristGuideId);
+//        addMembers(newTour.getId(), new MemberDTO(userIds));
         return newTour;
     }
 
