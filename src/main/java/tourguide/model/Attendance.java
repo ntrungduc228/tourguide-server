@@ -1,5 +1,6 @@
 package tourguide.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,13 +20,17 @@ public class Attendance extends TimeStamps{
     @JoinColumn(name="userId", referencedColumnName = "id")
     private User user;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="destinationId", referencedColumnName = "id")
+    @JoinColumn(name="destinationId", referencedColumnName = "id",insertable=false, updatable=false)
     private Destination destination;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="appointmentId", referencedColumnName = "id")
-    private Appoinment appoinment;
+    @JoinColumn(name="destinationId", referencedColumnName = "id",insertable=false, updatable=false)
+    private Appointment appointment;
 
     private Boolean isAttend;
+
+    private AttendanceType type;
 }

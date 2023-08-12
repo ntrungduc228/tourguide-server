@@ -1,7 +1,7 @@
 package tourguide.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import tourguide.model.Appoinment;
+import tourguide.model.Appointment;
 
-public interface AppointmentRepository extends JpaRepository<Appoinment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 }

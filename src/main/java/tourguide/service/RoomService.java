@@ -39,6 +39,14 @@ public class RoomService {
         return optionalRoom.get();
     }
 
+    public Room findByRoomUserAndRoomTour(User user, Tour tour){
+        Optional<Room> optionalRoom = roomRepository.findByRoomUserAndRoomTour(user, tour);
+        if(optionalRoom.isEmpty()){
+            throw new NotFoundException("Không tìm thấy phòng");
+        }
+        return optionalRoom.get();
+    }
+
 
 
 
