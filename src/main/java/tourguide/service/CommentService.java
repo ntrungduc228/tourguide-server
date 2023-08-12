@@ -39,6 +39,7 @@ public class CommentService {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .postId(comment.getPost().getId())
+                .parentId(comment.getParentId())
                 .user(
                         new UserDTO().builder()
                                 .fullName(comment.getUser().getFullName())
@@ -55,6 +56,7 @@ public class CommentService {
         comment.setUser(userService.findById(userId));
         comment.setPost(postService.findById(commentDTO.getPostId()));
         comment.setContent(commentDTO.getContent());
+        comment.setParentId(commentDTO.getParentId());
 
         Comment newComment= commentRepository.save(comment);
 

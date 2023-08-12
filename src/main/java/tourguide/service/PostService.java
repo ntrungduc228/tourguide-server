@@ -58,6 +58,8 @@ public class PostService {
         if(postDTO.getFiles()!= null){
             List<File> fileList = buildFiles(postDTO.getFiles(), post);
             post.setFiles(fileList);
+        }else {
+            System.out.println("file null");
         }
         Post newPost = postRepository.save(post);
 
@@ -68,6 +70,7 @@ public class PostService {
         List<File> fileList = new ArrayList<>();
         for(FileDTO fileDTO : fileDTOS){
             File file = new File();
+            System.out.println("link " + fileDTO.getLink());
             file.setLink(fileDTO.getLink());
             file.setPostFile(post);
             fileList.add(file);

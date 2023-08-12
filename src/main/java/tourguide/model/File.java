@@ -21,8 +21,5 @@ public class File extends TimeStamps{
     @ManyToOne()
     @JoinColumn(name="postId", referencedColumnName = "id")
     private Post postFile;
-
-//    private FileType type;
-
     private String link;
 }
