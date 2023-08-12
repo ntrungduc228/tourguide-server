@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import tourguide.model.Destination;
 import tourguide.model.Tour;
 import tourguide.model.User;
 import tourguide.payload.MemberDTO;
@@ -108,4 +109,14 @@ public class TourController {
         List<User> users = tourService.getMembers(id);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+
+    @GetMapping("{id}/destinations")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> getDestinations(@PathVariable Long id){
+        System.out.println(id);
+        List<Destination> destinations = tourService.getDestinations(id);
+        return new ResponseEntity<>(new ResponseDTO(destinations), HttpStatus.OK);
+    }
+
 }

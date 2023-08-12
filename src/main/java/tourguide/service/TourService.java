@@ -239,4 +239,11 @@ public class TourService {
         }
         return users;
     }
+
+
+    public List<Destination> getDestinations(Long id){
+        Tour tour = findById(id);
+        return tour.getDestinations();
+
+    }
 }
