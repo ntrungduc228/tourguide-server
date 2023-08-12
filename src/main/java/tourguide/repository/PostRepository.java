@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> getByTourId(Long tourId);
+    List<Post> findByTourIdOrderByLastModifiedDateDesc(Long tourId);
 }

@@ -85,6 +85,8 @@ public class PostService {
                 }
             }
 
+            Integer commentSize = post.getComments() != null ? post.getComments().size() : 0;
+
             PostDTO postReturn = new PostDTO(post.getId(), post.getContent(),
                     filesReturn,
                     post.getIsDelete(),
@@ -97,7 +99,7 @@ public class PostService {
                             .avatar(post.getUser().getAvatar())
                             .build(),
                     post.getLikes(),
-                    post.getComments().size(),
+                    commentSize,
                     post.getCreatedAt(), post.getLastModifiedDate());
             return postReturn;
         }
@@ -107,7 +109,7 @@ public class PostService {
     public List<PostDTO> getPostsByTourId(Long tourId, Long userId){
         Tour tour = tourService.findById(tourId);
         List<PostDTO> postsReturn = new ArrayList<>();
-        List<Post> posts = postRepository.getByTourId(tour.getId());
+        List<Post> posts = postRepository.findByTourIdOrderByLastModifiedDateDesc(tour.getId());
         if(posts != null){
             for (Post post : posts){
                 if(post.getIsDelete()){continue;}
