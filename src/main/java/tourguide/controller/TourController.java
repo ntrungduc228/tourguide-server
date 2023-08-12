@@ -40,7 +40,7 @@ public class TourController {
     public ResponseEntity<?> getTourInfo(@PathVariable Long id, HttpServletRequest request){
        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.getTourById(id, userId);
-       return new ResponseEntity<>(tour, HttpStatus.OK);
+       return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
 
    }
 

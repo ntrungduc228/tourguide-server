@@ -32,6 +32,7 @@ public class TourService {
     public List<Tour> getListTourByUserId(Long userId){
         List<Tour> tours = new ArrayList<>();
         List<Room> rooms = roomService.getListRoomByUserId(userId);
+//        System.out.println("ffff" + rooms.size());
         if(rooms.size() == 0){
             return tours;
         }
@@ -72,6 +73,7 @@ public class TourService {
         tour.setDestinations(list);
 
         Tour newTour = tourRepository.save(tour);
+        roomService.createRoom(touristGuideId, tour);
 //        List<Long> userIds = new ArrayList<>();
 //        userIds.add(touristGuideId);
 //        addMembers(newTour.getId(), new MemberDTO(userIds));
