@@ -21,8 +21,7 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
-    public UserDTO getInfo(Long id){
-        User user = findById(id);
+    public UserDTO buildUserDTO(User user){
         UserDTO userDTO = new UserDTO().builder()
                 .email(user.getEmail())
                 .fullName(user.getFullName())
@@ -31,6 +30,11 @@ public class UserService {
                 .role(user.getRole())
                 .build();
         return userDTO;
+    }
+
+    public UserDTO getInfo(Long id){
+        User user = findById(id);
+       return buildUserDTO(user);
     }
 
     public User findById(Long id){
