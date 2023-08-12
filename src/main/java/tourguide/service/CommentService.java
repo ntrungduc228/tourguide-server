@@ -64,11 +64,13 @@ public class CommentService {
     }
 
     public List<CommentDTO> getCommentByPosts(Long postId){
+        System.out.println("vo dayt roi bha");
         List<Comment> comments = commentRepository.findByPostId(postId);
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(Comment comment: comments){
             commentDTOS.add(buildCommentDTO(comment));
         }
+        System.out.println("comment " +  commentDTOS.size());
         return commentDTOS;
     }
 
