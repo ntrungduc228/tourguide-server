@@ -19,10 +19,6 @@ public class Appointment extends TimeStamps{
 
     private String address;
 
-    @ManyToOne
-    @JoinColumn(name="destinationId", referencedColumnName = "id")
-    private Destination destination;
-
     private String content;
     private LocalDateTime time;
 }

@@ -9,6 +9,5 @@ import tourguide.model.User;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
-    Optional<Attendance> findByUserAndDestination(User user, Destination destination);
     Optional<Attendance> findByUserAndAppointment(User user, Appointment appointment);
 }

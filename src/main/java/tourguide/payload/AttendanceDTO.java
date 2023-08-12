@@ -11,8 +11,7 @@ import tourguide.model.AttendanceType;
 public class AttendanceDTO {
     private Long id;
     private Long userId;
-    private Long destinationId;
+    private Long appointmentId;
     private Boolean isAttend;
-    private AttendanceType type;
     private UserDTO user;
 }

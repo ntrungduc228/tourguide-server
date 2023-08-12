@@ -35,8 +35,7 @@ public class AttendanceService {
         AttendanceDTO attendanceDTO = new AttendanceDTO().builder()
                 .id(attendance.getId())
                 .isAttend(attendance.getIsAttend())
-                .type(attendance.getType())
-                .destinationId(attendance.getDestination().getId())
+                .appointmentId(attendance.getAppointment().getId())
                 .user(userService.buildUserDTO(attendance.getUser())
                         )
                 .build();
@@ -47,22 +46,13 @@ public class AttendanceService {
         Destination destination = null;
         Appointment appointment = null;
         User user = userService.findById(attendanceDTO.getUserId());
-        if(attendanceDTO.getType().equals(AttendanceType.DESTINATION)){
-            destination = destinationService.findById(attendanceDTO.getDestinationId());
-            roomService.findByRoomUserAndRoomTour(user, destination.getTour());
-        }else {
-            appointment = appointmentService.findById(attendanceDTO.getDestinationId());
-            roomService.findByRoomUserAndRoomTour(user, appointment.getDestination().getTour());
-        }
+        appointment = appointmentService.findById(attendanceDTO.getAppointmentId());
+//        roomService.findByRoomUserAndRoomTour(user, appointment.getDestination().getTour());
 
         Attendance attendance = new Attendance();
         attendance.setIsAttend(true);
         attendance.setUser(user);
-        if(attendanceDTO.getType().equals(AttendanceType.DESTINATION)){
-            attendance.setDestination(destination);
-        }else {
-            attendance.setAppointment(appointment);
-        }
+        attendance.setAppointment(appointment);
         Attendance newAttendance = attendanceRepository.save(attendance);
         return  buildAttendanceDTO(attendance);
     }
