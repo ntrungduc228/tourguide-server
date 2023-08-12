@@ -31,6 +31,8 @@ public class CommentController {
     @GetMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getCommentByPost(@RequestParam("post") Long postId){
+        System.out.println("yeyeeyeyy");
+        System.out.println(postId);
         return new ResponseEntity<>(new ResponseDTO(commentService.getCommentByPosts(postId)), HttpStatus.OK);
     }
 
