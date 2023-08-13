@@ -4,5 +4,6 @@ public enum NotificationType {
     COMMENT,
     REPLY_COMMENT,
     BEGIN_TOUR,
-    END_TOUR
+    END_TOUR,
+    LIKE_POST
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tourguide.model.NotificationType;
 import tourguide.model.Post;
 import tourguide.payload.PostDTO;
 import tourguide.payload.ResponseDTO;
@@ -44,6 +45,17 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable Long id ,@RequestBody PostDTO postDto, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         PostDTO post = postService.updatePost(id, postDto, userId);
+        return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
+    @PatchMapping("{id}/like")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> likePost(@PathVariable Long id ,@RequestBody PostDTO postDTO, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        PostDTO post = postService.likePost(id, userId, postDTO.getLikes());
+        if(postDTO.getLikes() >0){
+            postService.notificationPost(post.getUser().getId(), userId, NotificationType.LIKE_POST);
+        }
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 

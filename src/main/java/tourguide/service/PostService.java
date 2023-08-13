@@ -1,15 +1,14 @@
 package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
-import tourguide.model.File;
-import tourguide.model.Post;
-import tourguide.model.Tour;
-import tourguide.model.User;
+import tourguide.model.*;
 import tourguide.payload.FileDTO;
+import tourguide.payload.NotificationDTO;
 import tourguide.payload.PostDTO;
 import tourguide.payload.UserDTO;
 import tourguide.repository.FileRepository;
@@ -33,6 +32,12 @@ public class PostService {
 
     @Autowired
     FileRepository fileRepository;
+
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    NotificationService notificationService;
 
     public List<Post> getPosts(){
         List<Post> lists= (List<Post>) postRepository.findAll();
@@ -104,6 +109,7 @@ public class PostService {
                     post.getIsDelete(),
                     post.getTour().getId(), post.getUser().getId(),
                     new UserDTO().builder()
+                            .id(post.getUser().getId())
                             .email(post.getUser().getEmail())
                             .role(post.getUser().getRole())
                             .phone(post.getUser().getPhone())
@@ -139,6 +145,24 @@ public class PostService {
         post.setIsDelete(true);
         Post newPost = postRepository.save(post);
         return buildPostReturn(newPost);
+    }
+
+    public PostDTO likePost(Long postId, Long userId, Integer like){
+        Post post = findById(postId);
+        post.setLikes(post.getLikes() + like);
+        Post newPost = postRepository.save(post);
+        return buildPostReturn(newPost);
+    }
+
+    public void notificationPost(Long receiverId, Long creatorId, NotificationType type){
+        NotificationDTO notificationDTO = new NotificationDTO().builder()
+                .isRead(false)
+                .receiverId(receiverId)
+                .creatorId(creatorId)
+                .content(String.valueOf(type))
+                .build();
+        NotificationDTO notification = notificationService.createNotification(notificationDTO);
+        simpMessagingTemplate.convertAndSend("/topic/noti/" + receiverId + "/new", notification);
     }
 
     @Transactional
