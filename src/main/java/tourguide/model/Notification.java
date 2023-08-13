@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Entity
 public class Notification extends TimeStamps{
 
     @Id
@@ -24,4 +25,6 @@ public class Notification extends TimeStamps{
     private User receiver;
 
     private Boolean isRead;
+
+    private String content;
 }

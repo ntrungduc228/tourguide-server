@@ -32,7 +32,7 @@ public class TourService {
     public List<Tour> getListTourByUserId(Long userId){
         List<Tour> tours = new ArrayList<>();
         List<Room> rooms = roomService.getListRoomByUserId(userId);
-        System.out.println("ffff" + rooms.size());
+//        System.out.println("ffff" + rooms.size());
         if(rooms.size() == 0){
             return tours;
         }
