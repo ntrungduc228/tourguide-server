@@ -121,7 +121,7 @@ public class PostService {
     public List<PostDTO> getPostsByTourId(Long tourId, Long userId){
         Tour tour = tourService.findById(tourId);
         List<PostDTO> postsReturn = new ArrayList<>();
-        List<Post> posts = postRepository.findByTourIdOrderByLastModifiedDateDesc(tour.getId());
+        List<Post> posts = postRepository.findByTourIdAndIsDeleteOrderByLastModifiedDateDesc(tour.getId(), false);
         if(posts != null){
             for (Post post : posts){
                 if(post.getIsDelete()){continue;}

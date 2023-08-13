@@ -47,6 +47,14 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> deletePost(@PathVariable Long id , HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        PostDTO post = postService.deletePost(id, userId);
+        return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
     @GetMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getPostsByTourId(@RequestParam("tour") Long id, HttpServletRequest request){
