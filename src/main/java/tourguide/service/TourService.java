@@ -264,6 +264,22 @@ public class TourService {
         return false;
     }
 
+    public Tour getTourProgress(Long userId){
+            List<Tour> tours = new ArrayList<>();
+            List<Room> rooms = roomService.getListRoomByUserId(userId);
+//        System.out.println("ffff" + rooms.size());
+            if(rooms.size() != 0){
+                for (Room room : rooms){
+                    if(room.getRoomTour().getIsProgress()!= null && room.getRoomTour().getIsProgress()){
+                        return room.getRoomTour();
+                }
+            }
+
+
+        }
+            return null;
+    }
+
     public Tour joinRoom(Long tourId, Long userId){
         Tour tour = findById(tourId);
         for(Room roomTour : tour.getRooms()){

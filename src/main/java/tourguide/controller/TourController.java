@@ -70,6 +70,13 @@ public class TourController {
         return new ResponseEntity<>(tour, HttpStatus.OK);
    }
 
+   @GetMapping("progress")
+   @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+   public ResponseEntity<?> getTourProgress(HttpServletRequest request){
+       Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+       return new ResponseEntity<>(new ResponseDTO(tourService.getTourProgress(userId)), HttpStatus.OK);
+   }
+
    @DeleteMapping("{id}")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> deleteTour(@PathVariable Long id){
