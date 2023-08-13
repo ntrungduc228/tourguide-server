@@ -23,7 +23,7 @@ public class Attendance extends TimeStamps{
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="appointmentId", referencedColumnName = "id",insertable=false, updatable=false)
+    @JoinColumn(name="appointmentId", referencedColumnName = "id")
     private Appointment appointment;
 
     private Boolean isAttend;

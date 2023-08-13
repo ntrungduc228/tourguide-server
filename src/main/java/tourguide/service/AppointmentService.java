@@ -48,7 +48,7 @@ public class AppointmentService {
         return appointmentDTO;
     }
 
-    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, Long userId){
+    public Appointment createAppointment(AppointmentDTO appointmentDTO, Long userId){
         Appointment appointment = new Appointment().builder()
                 .address(appointmentDTO.getAddress())
                 .content(appointmentDTO.getContent())
@@ -65,7 +65,7 @@ public class AppointmentService {
                 notificationService.notify(receiverId, userId, NotificationType.NEW_APPOINTMENT);
             }
         }
-        return buildAppointmentDTO(appointment);
+        return appointment;
     }
 
     public AttendanceDTO buildAttendanceDTO(Attendance attendance){
@@ -85,6 +85,7 @@ public class AppointmentService {
         User user = userService.findById(attendanceDTO.getUserId());
         appointment = findById(attendanceDTO.getAppointmentId());
 //        roomService.findByRoomUserAndRoomTour(user, appointment.getDestination().getTour());
+        System.out.println("ssfdsf " + appointment.getId());
 
         Attendance attendance = new Attendance();
         attendance.setIsAttend(false);
@@ -120,6 +121,23 @@ public class AppointmentService {
         return appointment;
     }
 
-
     // diem danh
+    public Appointment updateAttendance(AppointmentDTO appointmentDTO){
+        Appointment appointment = findById(appointmentDTO.getId());
+        if(appointmentDTO.getUserIds()!= null && appointmentDTO.getUserIds().size() > 0){
+            List<Attendance> attendances = appointment.getAttendances();
+            for(Long userId: appointmentDTO.getUserIds()){
+                for(Attendance  attendance : attendances){
+                    if(attendance.getUser().getId() == userId){
+                        attendance.setIsAttend(true);
+                    }
+                }
+            }
+            appointment.setAttendances(attendances);
+        }
+        Appointment newAppointment = appointmentRepository.save(appointment);
+
+        return appointment;
+    }
+
 }
