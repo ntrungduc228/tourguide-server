@@ -20,7 +20,7 @@ public class Notification extends TimeStamps{
     @JoinColumn(name="creatorId", referencedColumnName = "id")
     private User creator;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="receiverId", referencedColumnName = "id")
     private User receiver;
 

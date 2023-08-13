@@ -85,6 +85,15 @@ public class TourController {
        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
    }
 
+    @PatchMapping("{id}/end")
+    @PreAuthorize("hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> endTour(@PathVariable Long id, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        Tour tour = tourService.endTour(id, userId);
+        tourService.notificationTourMember(tour, NotificationType.END_TOUR, userId);
+        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
+    }
+
    @PostMapping("{id}/members/add")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> addMembers(@PathVariable Long id, @RequestBody MemberDTO memberDTO){

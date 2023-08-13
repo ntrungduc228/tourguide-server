@@ -99,9 +99,14 @@ public class TourService {
         return tourRepository.save(newTour);
     }
 
-//    public Tour endTour(Long tourId, Long userId){
-//
-//    }
+    public Tour endTour(Long tourId, Long userId){
+        Tour tour = findById(tourId);
+        if(!tour.getIsProgress()){
+            throw new BadRequestException("Tour này không diễn ra");
+        }
+        tour.setIsProgress(false);
+        return tourRepository.save(tour);
+    }
 
     public Tour getTourById(Long id,Long userId){
         Tour tour = findById(id);
