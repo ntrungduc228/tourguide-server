@@ -1,8 +1,10 @@
 package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tourguide.model.Notification;
+import tourguide.model.NotificationType;
 import tourguide.model.User;
 import tourguide.payload.NotificationDTO;
 import tourguide.payload.UserDTO;
@@ -20,6 +22,9 @@ public class NotificationService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
     public NotificationDTO buildNotificationDTO(Notification notification){
         if(notification == null) return null;
         NotificationDTO notificationDTO = new NotificationDTO().builder()
@@ -32,6 +37,17 @@ public class NotificationService {
         notificationDTO.setCreatedAt(notification.getCreatedAt());
         notificationDTO.setLastModifiedDate(notification.getLastModifiedDate());
         return notificationDTO;
+    }
+
+    public void notify(Long receiverId, Long creatorId, NotificationType type){
+        NotificationDTO notificationDTO = new NotificationDTO().builder()
+                .isRead(false)
+                .receiverId(receiverId)
+                .creatorId(creatorId)
+                .content(String.valueOf(type))
+                .build();
+        NotificationDTO notification = createNotification(notificationDTO);
+        simpMessagingTemplate.convertAndSend("/topic/noti/" + receiverId + "/new", notification);
     }
 
     public NotificationDTO createNotification(NotificationDTO notificationDTO) {

@@ -1,10 +1,12 @@
 package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
 import tourguide.model.Comment;
+import tourguide.model.NotificationType;
 import tourguide.model.Post;
 import tourguide.payload.CommentDTO;
 import tourguide.payload.UserDTO;
@@ -25,6 +27,10 @@ public class CommentService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    NotificationService notificationService;
+
 
     public Comment findById(Long id){
         Optional<Comment> optionalComment = commentRepository.findById(id);
@@ -52,13 +58,19 @@ public class CommentService {
 
     public CommentDTO createComment(CommentDTO commentDTO, Long userId){
         Comment comment = new Comment();
+        Post post = postService.findById(commentDTO.getPostId());
         comment.setIsDelete(false);
         comment.setUser(userService.findById(userId));
-        comment.setPost(postService.findById(commentDTO.getPostId()));
+        comment.setPost(post);
         comment.setContent(commentDTO.getContent());
         comment.setParentId(commentDTO.getParentId());
 
         Comment newComment= commentRepository.save(comment);
+        if(commentDTO.getParentId()!= null){
+            notificationService.notify(post.getUser().getId(), userId, NotificationType.REPLY_COMMENT);
+        }else{
+            notificationService.notify(post.getUser().getId(), userId, NotificationType.COMMENT);
+        }
 
         return buildCommentDTO(newComment);
     }
