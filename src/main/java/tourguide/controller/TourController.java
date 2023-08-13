@@ -12,6 +12,7 @@ import tourguide.model.*;
 import tourguide.payload.MemberDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.payload.TourDTO;
+import tourguide.service.NotificationService;
 import tourguide.service.TourService;
 import tourguide.utils.JwtUtil;
 
@@ -29,6 +30,9 @@ public class TourController {
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    NotificationService notificationService;
 
    @GetMapping("own")
    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
@@ -103,8 +107,13 @@ public class TourController {
 
    @PostMapping("{id}/members/add")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
-    public ResponseEntity<?> addMembers(@PathVariable Long id, @RequestBody MemberDTO memberDTO){
+    public ResponseEntity<?> addMembers(@PathVariable Long id, @RequestBody MemberDTO memberDTO, HttpServletRequest request){
+       Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.addMembers(id, memberDTO);
+       for(Long memberId : memberDTO.getUserIds()){
+           notificationService.notify(memberId, userId, NotificationType.ADD_ROOM);
+           simpMessagingTemplate.convertAndSend("/topic/room/" + memberId + "/add", tour);
+       }
        return new ResponseEntity<>(tour, HttpStatus.OK);
    }
 
@@ -125,8 +134,14 @@ public class TourController {
 
     @PatchMapping("{id}/members/approve")
     @PreAuthorize("hasRole('TOURIST_GUIDE')")
-    public ResponseEntity<?> approveMembers(@PathVariable Long id, @RequestBody MemberDTO memberDTO){
+    public ResponseEntity<?> approveMembers(@PathVariable Long id, @RequestBody MemberDTO memberDTO, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+
         Tour tour = tourService.approveMember(id, memberDTO);
+        for(Long memberId : memberDTO.getUserIds()){
+            notificationService.notify(memberId, userId, NotificationType.APPROVE_ROOM);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + memberId + "/add", tour);
+        }
         return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 
