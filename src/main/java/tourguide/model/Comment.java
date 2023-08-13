@@ -21,9 +21,6 @@ public class Comment extends TimeStamps{
     @JoinColumn(name="userId", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name="tourId", referencedColumnName = "id")
-    private Tour tour;
 
     @JsonIgnore
     @ManyToOne
