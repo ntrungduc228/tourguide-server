@@ -47,11 +47,9 @@ public class CommentService {
                 .postId(comment.getPost().getId())
                 .parentId(comment.getParentId())
                 .user(
-                        new UserDTO().builder()
-                                .fullName(comment.getUser().getFullName())
-                                .avatar(comment.getUser().getAvatar())
-                                .build()
+                        userService.buildUserDTO(comment.getUser())
                 )
+                .isDelete(comment.getIsDelete())
                 .build();
         return commentDTO;
     }
@@ -78,6 +76,26 @@ public class CommentService {
     public List<CommentDTO> getCommentByPosts(Long postId){
         System.out.println("vo dayt roi bha");
         List<Comment> comments = commentRepository.findByPostId(postId);
+        List<Comment> commentsRemove = new ArrayList<>();
+        for (Comment comment : comments){
+            if(comment.getIsDelete()){
+                commentsRemove.add(comment);
+            }
+        }
+
+        for(Comment comment : commentsRemove){
+            for(Comment commentChild : comments){
+                if(commentChild.getParentId() == comment.getId()){
+                    commentsRemove.add(commentChild);
+                }
+            }
+        }
+
+        for(Comment comment :  commentsRemove){
+            comments.remove(comment);
+        }
+
+
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(Comment comment: comments){
             commentDTOS.add(buildCommentDTO(comment));
@@ -96,12 +114,13 @@ public class CommentService {
         return buildCommentDTO(newComment);
     }
 
-    public Boolean deleteComment(Long id, Long userId){
+    public Comment deleteComment(Long id, Long userId){
         Comment comment = findById(id);
         if(comment.getUser().getId() != userId){
             throw new BadRequestException("Không thể xóa bình luận này");
         }
-        commentRepository.delete(comment);
-        return true;
+        comment.setIsDelete(true);
+        commentRepository.save(comment);
+        return comment;
     }
 }

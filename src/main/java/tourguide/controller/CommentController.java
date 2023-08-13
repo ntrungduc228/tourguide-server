@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tourguide.model.Comment;
 import tourguide.payload.CommentDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.service.CommentService;
@@ -21,11 +23,17 @@ public class CommentController {
     @Autowired
     JwtUtil jwtUtil;
 
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
     @PostMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
-        return new ResponseEntity<>(new ResponseDTO((commentService.createComment(commentDTO, userId))), HttpStatus.CREATED);
+        CommentDTO comment = commentService.createComment(commentDTO, userId);
+        simpMessagingTemplate.convertAndSend("/topic/post/" + comment.getPostId() + "/comment", comment);
+
+        return new ResponseEntity<>(new ResponseDTO((comment)), HttpStatus.CREATED);
     }
 
     @GetMapping("")
@@ -40,14 +48,18 @@ public class CommentController {
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> updateComment(@RequestBody CommentDTO commentDTO, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
-        return new ResponseEntity<>(new ResponseDTO((commentService.updateComment(commentDTO, userId))), HttpStatus.CREATED);
+        CommentDTO comment = commentService.updateComment(commentDTO, userId);
+        simpMessagingTemplate.convertAndSend("/topic/post/" + comment.getPostId() + "/comment", comment);
+        return new ResponseEntity<>(new ResponseDTO((comment)), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> deleteComment(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
-        return new ResponseEntity<>(new ResponseDTO((commentService.deleteComment(id, userId))), HttpStatus.CREATED);
+        Comment comment = commentService.deleteComment(id, userId);
+        simpMessagingTemplate.convertAndSend("/topic/post/" + comment.getPost().getId() + "/comment", comment);
+        return new ResponseEntity<>(new ResponseDTO((comment)), HttpStatus.OK);
     }
 
 }

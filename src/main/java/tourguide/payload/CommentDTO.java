@@ -15,4 +15,5 @@ public class CommentDTO {
     private UserDTO user;
     private Long postId;
     private Long parentId;
+    private Boolean isDelete;
 }

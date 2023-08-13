@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.NotificationType;
@@ -31,6 +32,9 @@ public class PostController {
 //        return new ResponseEntity<>(new ResponseDTO(lists), HttpStatus.OK);
 //    }
 
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
     @PostMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> createPost(@RequestBody PostDTO postDto, HttpServletRequest request){
@@ -56,6 +60,8 @@ public class PostController {
         if(postDTO.getLikes() >0){
             postService.notificationPost(post.getUser().getId(), userId, NotificationType.LIKE_POST);
         }
+        simpMessagingTemplate.convertAndSend("/topic/post/" + post.getTourId() + "/like", post);
+
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
