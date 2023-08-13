@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tourguide.payload.AppointmentDTO;
 import tourguide.payload.PostDTO;
 import tourguide.payload.ResponseDTO;
@@ -36,4 +33,28 @@ public class AppointmentController {
         AppointmentDTO appointmentDTO1 = appointmentService.createAppointment(appointmentDTO, userId);
         return new ResponseEntity<>(new ResponseDTO((appointmentDTO1)), HttpStatus.CREATED);
     }
+
+    @PatchMapping("")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> updateAppointment(@RequestBody AppointmentDTO appointmentDTO, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        return new ResponseEntity<>(new ResponseDTO((appointmentService.updateAppointment(appointmentDTO))), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> getAppointmentByTour(@PathVariable Long id, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+
+        return new ResponseEntity<>(new ResponseDTO((appointmentService.getListAppointmentByTourId(id))), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> deleteAppointment(@PathVariable Long id, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+
+        return new ResponseEntity<>(new ResponseDTO((appointmentService.deleteAppointment(id))), HttpStatus.OK);
+    }
+
 }

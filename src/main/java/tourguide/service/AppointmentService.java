@@ -9,6 +9,8 @@ import tourguide.payload.AttendanceDTO;
 import tourguide.repository.AppointmentRepository;
 import tourguide.repository.AttendanceRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -91,4 +93,33 @@ public class AppointmentService {
         Attendance newAttendance = attendanceRepository.save(attendance);
         return  buildAttendanceDTO(attendance);
     }
+
+    // get diem hen
+    public List<AppointmentDTO> getListAppointmentByTourId(Long tourId){
+        Tour tour = tourService.findById(tourId);
+        List<Appointment> appointments = appointmentRepository.findByTour(tour);
+        List<AppointmentDTO> appointmentDTOS = new ArrayList<>();
+        for(Appointment appointment :appointments){
+            appointmentDTOS.add(buildAppointmentDTO(appointment));
+        }
+        return appointmentDTOS;
+    }
+    // sua diem hen
+    public Appointment updateAppointment(AppointmentDTO appointmentDTO){
+        Appointment appointment = findById(appointmentDTO.getId());
+        appointment.setAddress(appointmentDTO.getAddress());
+        appointment.setContent(appointmentDTO.getContent());
+        appointment.setTime(appointmentDTO.getTime());
+        return appointmentRepository.save(appointment);
+    }
+
+    // xoa diem hen
+    public Appointment deleteAppointment(Long id){
+        Appointment appointment = findById(id);
+        appointmentRepository.delete(appointment);
+        return appointment;
+    }
+
+
+    // diem danh
 }
