@@ -31,41 +31,41 @@ public class AttendanceService {
 
 
 
-    public AttendanceDTO buildAttendanceDTO(Attendance attendance){
-        AttendanceDTO attendanceDTO = new AttendanceDTO().builder()
-                .id(attendance.getId())
-                .isAttend(attendance.getIsAttend())
-                .appointmentId(attendance.getAppointment().getId())
-                .user(userService.buildUserDTO(attendance.getUser())
-                        )
-                .build();
-        return attendanceDTO;
-    }
+//    public AttendanceDTO buildAttendanceDTO(Attendance attendance){
+//        AttendanceDTO attendanceDTO = new AttendanceDTO().builder()
+//                .id(attendance.getId())
+//                .isAttend(attendance.getIsAttend())
+//                .appointmentId(attendance.getAppointment().getId())
+//                .user(userService.buildUserDTO(attendance.getUser())
+//                        )
+//                .build();
+//        return attendanceDTO;
+//    }
 
-    public AttendanceDTO createAttendance(AttendanceDTO attendanceDTO){
-        Destination destination = null;
-        Appointment appointment = null;
-        User user = userService.findById(attendanceDTO.getUserId());
-        appointment = appointmentService.findById(attendanceDTO.getAppointmentId());
-//        roomService.findByRoomUserAndRoomTour(user, appointment.getDestination().getTour());
+//    public AttendanceDTO createAttendance(AttendanceDTO attendanceDTO){
+//        Destination destination = null;
+//        Appointment appointment = null;
+//        User user = userService.findById(attendanceDTO.getUserId());
+//        appointment = appointmentService.findById(attendanceDTO.getAppointmentId());
+////        roomService.findByRoomUserAndRoomTour(user, appointment.getDestination().getTour());
+//
+//        Attendance attendance = new Attendance();
+//        attendance.setIsAttend(false);
+//        attendance.setUser(user);
+//        attendance.setAppointment(appointment);
+//        Attendance newAttendance = attendanceRepository.save(attendance);
+//        return  buildAttendanceDTO(attendance);
+//    }
 
-        Attendance attendance = new Attendance();
-        attendance.setIsAttend(true);
-        attendance.setUser(user);
-        attendance.setAppointment(appointment);
-        Attendance newAttendance = attendanceRepository.save(attendance);
-        return  buildAttendanceDTO(attendance);
-    }
-
-    public AttendanceDTO updateAttendance(Long id, AttendanceDTO attendanceDTO){
-        Optional<Attendance> attendanceOptional = attendanceRepository.findById(id);
-        if(attendanceOptional.isEmpty()){
-            return createAttendance(attendanceDTO);
-        }
-        attendanceOptional.get().setIsAttend(!attendanceOptional.get().getIsAttend());
-        Attendance newAttendance = attendanceRepository.save(attendanceOptional.get());
-        return buildAttendanceDTO(newAttendance);
-    }
+//    public AttendanceDTO updateAttendance(Long id, AttendanceDTO attendanceDTO){
+//        Optional<Attendance> attendanceOptional = attendanceRepository.findById(id);
+//        if(attendanceOptional.isEmpty()){
+//            return createAttendance(attendanceDTO);
+//        }
+//        attendanceOptional.get().setIsAttend(!attendanceOptional.get().getIsAttend());
+//        Attendance newAttendance = attendanceRepository.save(attendanceOptional.get());
+//        return buildAttendanceDTO(newAttendance);
+//    }
 
 //    public List<AttendanceDTO> attendDestination(ListAttendanceDTO listAttendanceDTO){
 //        if(listAttendanceDTO == null || listAttendanceDTO.getUserIds().size() == 0){

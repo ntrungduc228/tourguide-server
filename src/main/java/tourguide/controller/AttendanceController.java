@@ -18,11 +18,11 @@ public class AttendanceController {
     @Autowired
     AttendanceService attendanceService;
 
-    @PostMapping("")
-    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
-    public ResponseEntity<?> createAttendance(@RequestBody AttendanceDTO attendanceDTO){
-        return new ResponseEntity<>(new ResponseDTO(attendanceService.createAttendance(attendanceDTO)), HttpStatus.CREATED);
-    }
+//    @PostMapping("")
+//    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+//    public ResponseEntity<?> createAttendance(@RequestBody AttendanceDTO attendanceDTO){
+//        return new ResponseEntity<>(new ResponseDTO(attendanceService.createAttendance(attendanceDTO)), HttpStatus.CREATED);
+//    }
 
 
 }
