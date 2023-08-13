@@ -1,16 +1,15 @@
 package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
-import tourguide.model.Destination;
-import tourguide.model.Room;
-import tourguide.model.Tour;
-import tourguide.model.User;
+import tourguide.model.*;
 import tourguide.payload.DestinationDTO;
 import tourguide.payload.MemberDTO;
+import tourguide.payload.NotificationDTO;
 import tourguide.payload.TourDTO;
 import tourguide.repository.DestinationRepository;
 import tourguide.repository.TourRepository;
@@ -33,6 +32,12 @@ public class TourService {
     @Autowired
     RoomService roomService;
 
+    @Autowired
+    NotificationService notificationService;
+
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
     public List<Tour> getListTourByUserId(Long userId){
         List<Tour> tours = new ArrayList<>();
         List<Room> rooms = roomService.getListRoomByUserId(userId);
@@ -46,6 +51,57 @@ public class TourService {
         }
         return tours;
     }
+
+    public void notificationTourMember(Tour tour, NotificationType type, Long creatorId){
+        System.out.println("tour size " + tour.getId() + " " + tour.getRooms().size());
+        if(tour.getRooms() == null || tour.getRooms().size() == 0){
+            return;
+        }
+
+        for(Room room : tour.getRooms()){
+            if(room.getRoomUser().getId() != creatorId){
+                NotificationDTO notificationDTO = new NotificationDTO().builder()
+                        .isRead(false)
+                        .receiverId(room.getRoomUser().getId())
+                        .creatorId(creatorId)
+                        .content(String.valueOf(type))
+                        .build();
+                NotificationDTO notification = notificationService.createNotification(notificationDTO);
+                simpMessagingTemplate.convertAndSend("/topic/noti/" + room.getRoomUser().getId() + "/new", notification);
+
+            }
+
+        }
+
+    }
+
+    public Tour beginTour(Long tourId, Long userId){
+        List<Tour> tours = getListTourByUserId(userId);
+        if(tours.size() == 0){
+            return null;
+        }
+        for (Tour tour: tours){
+            if(tour.getIsProgress()!=null && tour.getIsProgress()){
+                throw new BadRequestException("Bạn đang có tour khác diễn ra");
+            }
+        }
+        Tour newTour = null;
+        for (Tour tour: tours){
+            if(tour.getId() == tourId){
+                newTour = tour;break;
+            }
+        }
+
+        if(newTour == null){
+            throw new NotFoundException("Không tìm thấy tour");
+        }
+        newTour.setIsProgress(true);
+        return tourRepository.save(newTour);
+    }
+
+//    public Tour endTour(Long tourId, Long userId){
+//
+//    }
 
     public Tour getTourById(Long id,Long userId){
         Tour tour = findById(id);

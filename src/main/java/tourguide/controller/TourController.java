@@ -8,10 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import tourguide.model.Destination;
-import tourguide.model.Room;
-import tourguide.model.Tour;
-import tourguide.model.User;
+import tourguide.model.*;
 import tourguide.payload.MemberDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.payload.TourDTO;
@@ -77,6 +74,15 @@ public class TourController {
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> deleteTour(@PathVariable Long id){
        return new ResponseEntity<>(tourService.deleteTour(id), HttpStatus.OK);
+   }
+
+   @PatchMapping("{id}/begin")
+   @PreAuthorize("hasRole('TOURIST_GUIDE')")
+   public ResponseEntity<?> beginTour(@PathVariable Long id, HttpServletRequest request){
+       Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+       Tour tour = tourService.beginTour(id, userId);
+       tourService.notificationTourMember(tour, NotificationType.BEGIN_TOUR, userId);
+       return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
    }
 
    @PostMapping("{id}/members/add")
