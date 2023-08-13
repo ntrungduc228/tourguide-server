@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserDTO extends TimeStampsDTO{
+    private Long id;
     private String email;
     private String fullName;
     private String phone;

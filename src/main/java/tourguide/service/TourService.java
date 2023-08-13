@@ -12,6 +12,7 @@ import tourguide.model.User;
 import tourguide.payload.DestinationDTO;
 import tourguide.payload.MemberDTO;
 import tourguide.payload.TourDTO;
+import tourguide.repository.DestinationRepository;
 import tourguide.repository.TourRepository;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,9 @@ public class TourService {
 
     @Autowired
     TourRepository tourRepository;
+
+    @Autowired
+    DestinationRepository destinationRepository;
 
     @Autowired
     RoomService roomService;
@@ -60,6 +64,7 @@ public class TourService {
         Tour tour = new Tour();
         tour.setName(tourDTO.getName());
         tour.setDescription(tourDTO.getDescription());
+        tour.setIsProgress(false);
         List<Destination> list = new ArrayList<>();
         for (DestinationDTO des : tourDTO.getDestinations()){
             Destination  destination = new Destination();
@@ -78,6 +83,21 @@ public class TourService {
 //        userIds.add(touristGuideId);
 //        addMembers(newTour.getId(), new MemberDTO(userIds));
         return newTour;
+    }
+
+    public List<Destination> buidListDes(List<DestinationDTO> destinationDTOS, Tour tour){
+        if(destinationDTOS == null) return null;
+        List<Destination> list = new ArrayList<>();
+        for (DestinationDTO des : destinationDTOS){
+            Destination  destination = new Destination();
+            destination.setName(des.getName());
+            destination.setAddress(des.getAddress());
+            destination.setContent(des.getContent());
+            destination.setTour(tour);
+            destination.setDepartureTime(des.getDepartureTime());
+            list.add(destination);
+        }
+        return list;
     }
 
     public Tour findById(Long id){
@@ -100,10 +120,14 @@ public class TourService {
         }
 
         if(tourDTO.getDestinations() != null && !tourDTO.getDestinations().isEmpty()){
-            for(DestinationDTO des : tourDTO.getDestinations()){
-                Destination destination = new Destination(des.getId(), des.getName(), des.getAddress(), des.getContent(),  des.getDepartureTime());
-                updateDestination(tour, destination);
-            }
+
+            List<Destination> list = buidListDes(tourDTO.getDestinations(), tour);
+            tour.setDestinations(list);
+
+//            for(DestinationDTO des : tourDTO.getDestinations()){
+//                Destination destination = new Destination(des.getId(), des.getName(), des.getAddress(), des.getContent(),  des.getDepartureTime());
+//                updateDestination(tour, destination);
+//            }
         }
 
 
@@ -125,13 +149,16 @@ public class TourService {
                 if(destination.getContent() != null && !destination.getContent().equals(des.getContent())){
                     des.setContent(destination.getContent());
                 }
+
+                if(destination.getDepartureTime() != null){
+                    des.setDepartureTime(destination.getDepartureTime());
+                }
 //               if(des.getDepartureTime().isBefore(LocalDateTime.now())){
 //                   des.setDepartureTime(destination.getDepartureTime());
 //               }else {
 //                   throw new BadRequestException("Không thể chỉnh sửa");
 //               }
-
-                return;
+                destinationRepository.save(des);
             }
         }
     }

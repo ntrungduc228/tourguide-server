@@ -4,10 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.Destination;
+import tourguide.model.Room;
 import tourguide.model.Tour;
 import tourguide.model.User;
 import tourguide.payload.MemberDTO;
@@ -27,6 +29,9 @@ public class TourController {
 
    @Autowired
     TourService tourService;
+
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
 
    @GetMapping("own")
    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
@@ -57,6 +62,14 @@ public class TourController {
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> updateTour(@PathVariable Long id, @RequestBody TourDTO tourDTO){
         Tour tour = tourService.updateTour(id, tourDTO);
+        if(tour.getRooms() != null){
+            for(Room room : tour.getRooms()){
+//                simpMessagingTemplate.convertAndSend("/topic/noti/" + room.getRoomUser().getId() + "/update", tour);
+                simpMessagingTemplate.convertAndSend("/topic/tours/" + room.getRoomUser().getId() + "/update", tour);
+            }
+
+        }
+
         return new ResponseEntity<>(tour, HttpStatus.OK);
    }
 

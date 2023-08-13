@@ -2,6 +2,7 @@ package tourguide.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import tourguide.model.Post;
 import tourguide.model.Room;
 import tourguide.model.Tour;
 import tourguide.model.User;
@@ -14,6 +15,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 //    List<Room> findByUserIdAndTourId(Long userId, Long tourId);
 
     List<Room> findByRoomUser(User user);
+    List<Room> findByRoomUserOrderByLastModifiedDateDesc(User user);
     Optional<Room> findByRoomUserAndRoomTour(User user, Tour tour);
 }
 

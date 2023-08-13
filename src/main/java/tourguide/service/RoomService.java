@@ -27,7 +27,7 @@ public class RoomService {
 
     public List<Room> getListRoomByUserId(Long userId){
         User user = userService.findById(userId);
-        List<Room> rooms = roomRepository.findByRoomUser(user);
+        List<Room> rooms = roomRepository.findByRoomUserOrderByLastModifiedDateDesc(user);
         return rooms;
     }
 

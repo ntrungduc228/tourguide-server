@@ -24,6 +24,7 @@ public class UserService {
 
     public UserDTO buildUserDTO(User user){
         UserDTO userDTO = new UserDTO().builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .address(user.getAddress())
