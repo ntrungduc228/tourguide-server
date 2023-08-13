@@ -255,6 +255,7 @@ public class TourService {
     public boolean checkUserIsInTour(Tour tour, User user){
         if(tour.getRooms() != null){
             for(Room room: tour.getRooms()){
+                System.out.println("room " + room.getRoomUser().getId() + " " + user.getId());
                 if(room.getRoomUser().getId() == user.getId()){
                     return  true;
                 }

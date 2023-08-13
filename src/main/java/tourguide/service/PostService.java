@@ -2,6 +2,7 @@ package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
 import tourguide.model.File;
@@ -11,6 +12,7 @@ import tourguide.model.User;
 import tourguide.payload.FileDTO;
 import tourguide.payload.PostDTO;
 import tourguide.payload.UserDTO;
+import tourguide.repository.FileRepository;
 import tourguide.repository.PostRepository;
 
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class PostService {
 
     @Autowired
     PostRepository postRepository;
+
+    @Autowired
+    FileRepository fileRepository;
 
     public List<Post> getPosts(){
         List<Post> lists= (List<Post>) postRepository.findAll();
@@ -69,13 +74,17 @@ public class PostService {
     public List<File> buildFiles(List<FileDTO> fileDTOS, Post post){
         List<File> fileList = new ArrayList<>();
         for(FileDTO fileDTO : fileDTOS){
-            File file = new File();
-            System.out.println("link " + fileDTO.getLink());
-            file.setLink(fileDTO.getLink());
-            file.setPostFile(post);
-            fileList.add(file);
+            fileList.add(buildFile(fileDTO, post));
         }
         return fileList;
+    }
+
+    public File buildFile(FileDTO fileDTO, Post post){
+        File file = new File();
+        System.out.println("link " + fileDTO.getLink());
+        file.setLink(fileDTO.getLink());
+        file.setPostFile(post);
+        return file;
     }
 
     public PostDTO buildPostReturn(Post post){
@@ -132,6 +141,7 @@ public class PostService {
         return buildPostReturn(newPost);
     }
 
+    @Transactional
     public PostDTO updatePost(Long postId, PostDTO postDTO, Long userId){
         Post post = findById(postId);
         if(post.getUser().getId() != userId || post.getIsDelete()){
@@ -143,9 +153,34 @@ public class PostService {
         }
 
         if(postDTO.getFiles()!= null){
-            List<File> fileList = buildFiles(postDTO.getFiles(), post);
+            fileRepository.deleteAllByPostFile(post);
+            List<File> fileList = new ArrayList<>();
+            fileList = buildFiles(postDTO.getFiles(), post);
             post.setFiles(fileList);
         }
+
+//        if(postDTO.getFiles()!= null){
+//            List<File> oldFile = post.getFiles();
+//            List<File> fileList = new ArrayList<>();
+//            if(oldFile == null || oldFile.size() == 0){
+//                // tim file cu
+//                for(FileDTO fileDTO : postDTO.getFiles()){
+//                    if(fileDTO.getId() != null){
+////                        fileList.add();
+//                        for(File file:oldFile){
+//                            if(file.getId() == fileDTO.getId()){
+//                                fileList.add(file); break;
+//                            }
+//                        }
+//                    }
+//                }
+//                // tim file bi xoa
+//
+//                // build file moi
+//            }
+//              fileList = buildFiles(postDTO.getFiles(), post);
+//            post.setFiles(fileList);
+//        }
 
         Post newPost = postRepository.save(post);
         return buildPostReturn(newPost);
