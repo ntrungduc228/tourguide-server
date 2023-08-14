@@ -46,6 +46,7 @@ public class AuthController {
 
     @GetMapping("info")
     public ResponseEntity<?> getInfo(HttpServletRequest request){
+        System.out.println("Get info user");
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         return new ResponseEntity<>(new ResponseDTO(userService.getInfo(userId)), HttpStatus.OK);
     }

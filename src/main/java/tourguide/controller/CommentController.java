@@ -11,6 +11,7 @@ import tourguide.model.Comment;
 import tourguide.payload.CommentDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.service.CommentService;
+import tourguide.service.NotificationService;
 import tourguide.utils.JwtUtil;
 
 @RestController
@@ -25,6 +26,9 @@ public class CommentController {
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    NotificationService notificationService;
 
     @PostMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")

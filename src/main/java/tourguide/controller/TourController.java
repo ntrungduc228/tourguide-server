@@ -124,6 +124,12 @@ public class TourController {
         return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 
+    @GetMapping("{id}/members/request")
+    @PreAuthorize("hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> getListMemberRequestJoin(@PathVariable Long id){
+       return new ResponseEntity<>(new ResponseDTO(tourService.getListMemberRequestJoin(id)), HttpStatus.OK);
+    }
+
     @PostMapping("{id}/members/join")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> joinRoom(@PathVariable Long id, HttpServletRequest request){

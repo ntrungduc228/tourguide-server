@@ -7,10 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
 import tourguide.model.*;
-import tourguide.payload.DestinationDTO;
-import tourguide.payload.MemberDTO;
-import tourguide.payload.NotificationDTO;
-import tourguide.payload.TourDTO;
+import tourguide.payload.*;
 import tourguide.repository.DestinationRepository;
 import tourguide.repository.TourRepository;
 
@@ -28,6 +25,9 @@ public class TourService {
 
     @Autowired
     DestinationRepository destinationRepository;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     RoomService roomService;
@@ -312,6 +312,19 @@ public class TourService {
         }
         tour.setRooms(rooms);
         return tourRepository.save(tour);
+    }
+
+    public List<UserDTO> getListMemberRequestJoin(Long tourId){
+        Tour tour = findById(tourId);
+        List<UserDTO> users = new ArrayList<>();
+        if(tour.getRooms() != null){
+            for(Room room : tour.getRooms()){
+                if(!room.getIsApproved()){
+                    users.add(userService.buildUserDTO(room.getRoomUser()));
+                }
+            }
+        }
+        return users;
     }
 
     public Tour outRoom(Long tourId, Long userId){
