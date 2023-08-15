@@ -30,6 +30,7 @@ public class AppointmentController {
     @PostMapping("")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO, HttpServletRequest request){
+        System.out.println("vooo con");
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Appointment appointmentDTO1 = appointmentService.createAppointment(appointmentDTO, userId);
         return new ResponseEntity<>(new ResponseDTO((appointmentDTO1)), HttpStatus.CREATED);
@@ -40,6 +41,14 @@ public class AppointmentController {
     public ResponseEntity<?> updateAppointment(@RequestBody AppointmentDTO appointmentDTO, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         return new ResponseEntity<>(new ResponseDTO((appointmentService.updateAppointment(appointmentDTO))), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/members")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> getMembers(@PathVariable Long id, HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        return new ResponseEntity<>(new ResponseDTO((appointmentService.getMember(id, userId))), HttpStatus.OK);
+
     }
 
     @GetMapping("{id}")

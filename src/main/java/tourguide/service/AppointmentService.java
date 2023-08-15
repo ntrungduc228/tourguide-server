@@ -40,32 +40,54 @@ public class AppointmentService {
 
     public AppointmentDTO buildAppointmentDTO(Appointment appointment){
         AppointmentDTO appointmentDTO = new AppointmentDTO().builder()
+                .id(appointment.getId())
                 .address(appointment.getAddress())
                 .content(appointment.getContent())
                 .time(appointment.getTime())
                 .tourId(appointment.getTour().getId())
+                .tour(appointment.getTour())
                 .build();
         return appointmentDTO;
     }
 
+    public List<Attendance> getMember(Long id, Long userId){
+        Appointment appointment = findById(id);
+        return appointment.getAttendances();
+    }
+
     public Appointment createAppointment(AppointmentDTO appointmentDTO, Long userId){
+        User user = userService.findById(userId);
+
         Appointment appointment = new Appointment().builder()
                 .address(appointmentDTO.getAddress())
                 .content(appointmentDTO.getContent())
                 .time(appointmentDTO.getTime())
                 .tour(tourService.findById(appointmentDTO.getTourId()))
                 .build();
-        Appointment newAppointment = appointmentRepository.save(appointment);
+        List<Attendance> attendances = new ArrayList<>();
+        System.out.println("a " + appointmentDTO.getUserIds().size());
         if(appointmentDTO.getUserIds()!= null && appointmentDTO.getUserIds().size() > 0){
             for(Long receiverId : appointmentDTO.getUserIds()){
-                AttendanceDTO attendanceDTO = new AttendanceDTO();
-                attendanceDTO.setUserId(receiverId);
-                attendanceDTO.setAppointmentId(newAppointment.getId());
-                createAttendance(attendanceDTO);
-                notificationService.notify(receiverId, userId, NotificationType.NEW_APPOINTMENT);
+                Attendance attendance = new Attendance();
+                attendance.setIsAttend(false);
+                attendance.setUser(userService.findById(receiverId));
+                attendance.setAppointment(appointment);
+                attendances.add(attendance);
+//                AttendanceDTO attendanceDTO = new AttendanceDTO();
+//                attendanceDTO.setUserId(receiverId);
+////                attendanceDTO.setAppointmentId(appointment.getId());
+//                attendances.add(createAttendance(attendanceDTO)) ;
             }
         }
-        return appointment;
+        appointment.setAttendances(attendances);
+
+        Appointment newAppointment = appointmentRepository.save(appointment);
+        for(Attendance attendance : newAppointment.getAttendances()){
+            System.out.println("hehehe");
+            notificationService.notify(attendance.getUser().getId(), userId, NotificationType.NEW_APPOINTMENT);
+
+        }
+        return newAppointment;
     }
 
     public AttendanceDTO buildAttendanceDTO(Attendance attendance){
@@ -79,7 +101,7 @@ public class AppointmentService {
         return attendanceDTO;
     }
 
-    public AttendanceDTO createAttendance(AttendanceDTO attendanceDTO){
+    public Attendance createAttendance(AttendanceDTO attendanceDTO){
         Destination destination = null;
         Appointment appointment = null;
         User user = userService.findById(attendanceDTO.getUserId());
@@ -92,8 +114,10 @@ public class AppointmentService {
         attendance.setUser(user);
         attendance.setAppointment(appointment);
         Attendance newAttendance = attendanceRepository.save(attendance);
-        return  buildAttendanceDTO(attendance);
+//        return  buildAttendanceDTO(attendance);
+        return newAttendance;
     }
+
 
     // get diem hen
     public List<AppointmentDTO> getListAppointmentByTourId(Long tourId){

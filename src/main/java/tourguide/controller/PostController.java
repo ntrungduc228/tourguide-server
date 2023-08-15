@@ -47,6 +47,7 @@ public class PostController {
     @PatchMapping("{id}")
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> updatePost(@PathVariable Long id ,@RequestBody PostDTO postDto, HttpServletRequest request){
+        System.out.println("vo r do");
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         PostDTO post = postService.updatePost(id, postDto, userId);
         return new ResponseEntity<>(post, HttpStatus.OK);

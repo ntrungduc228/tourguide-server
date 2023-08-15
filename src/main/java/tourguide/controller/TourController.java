@@ -127,6 +127,7 @@ public class TourController {
     @GetMapping("{id}/members/request")
     @PreAuthorize("hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> getListMemberRequestJoin(@PathVariable Long id){
+        System.out.println("tourid " + id);
        return new ResponseEntity<>(new ResponseDTO(tourService.getListMemberRequestJoin(id)), HttpStatus.OK);
     }
 
