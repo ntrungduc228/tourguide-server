@@ -75,7 +75,7 @@ public class CommentService {
 
     public List<CommentDTO> getCommentByPosts(Long postId){
         System.out.println("vo dayt roi bha");
-        List<Comment> comments = commentRepository.findByPostId(postId);
+        List<Comment> comments = commentRepository.findByPostIdOrderByLastModifiedDateAsc(postId);
         List<Comment> commentsRemove = new ArrayList<>();
         for (Comment comment : comments){
             if(comment.getIsDelete()){

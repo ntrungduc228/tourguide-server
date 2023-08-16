@@ -29,6 +29,7 @@ public class UserService {
                 .fullName(user.getFullName())
                 .address(user.getAddress())
                 .phone(user.getPhone())
+                .avatar(user.getAvatar())
                 .role(user.getRole())
                 .build();
         return userDTO;
