@@ -3,10 +3,13 @@ package tourguide.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import tourguide.exception.BadRequestException;
 import tourguide.exception.NotFoundException;
+import tourguide.model.Comment;
 import tourguide.model.Role;
 import tourguide.model.User;
 import tourguide.payload.AuthDTO;
+import tourguide.payload.CommentDTO;
 import tourguide.payload.UserDTO;
 import tourguide.repository.UserRepository;
 
@@ -87,4 +90,19 @@ public class UserService {
         }
         return users;
     }
+
+
+    public UserDTO updateProfile(UserDTO userDTO){
+        User user = findById(userDTO.getId());
+        user.setAddress(userDTO.getAddress());
+        if(!userDTO.getPhone().isEmpty()){
+            user.setPhone(userDTO.getPhone());
+        }
+
+        user.setFullName(userDTO.getFullName());
+        user.setAvatar(userDTO.getAvatar());
+        User newUser = userRepository.save(user);
+        return buildUserDTO(newUser);
+    }
+
 }

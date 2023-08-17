@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tourguide.model.Tour;
 import tourguide.model.User;
+import tourguide.payload.CommentDTO;
+import tourguide.payload.ResponseDTO;
+import tourguide.payload.UserDTO;
 import tourguide.service.UserService;
 
 import java.util.List;
@@ -30,5 +30,11 @@ public class UserController {
     public ResponseEntity<?> findByPhone(@RequestParam("q") String phone) throws Exception {
         List<User> users = userService.findByPhone(phone);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+    @PatchMapping("")
+    public ResponseEntity<?> updateProfile(@RequestBody UserDTO newUser){
+     UserDTO user = userService.updateProfile(newUser);
+
+        return new ResponseEntity<>(new ResponseDTO((user)), HttpStatus.OK);
     }
 }
