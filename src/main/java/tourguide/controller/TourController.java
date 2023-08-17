@@ -10,6 +10,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.*;
 import tourguide.payload.MemberDTO;
+import tourguide.payload.NotificationDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.payload.TourDTO;
 import tourguide.service.NotificationService;
@@ -92,7 +93,15 @@ public class TourController {
    public ResponseEntity<?> beginTour(@PathVariable Long id, HttpServletRequest request){
        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.beginTour(id, userId);
-       tourService.notificationTourMember(tour, NotificationType.BEGIN_TOUR, userId);
+       List<NotificationDTO> notificationDTOS = tourService.notificationTourMember(tour, NotificationType.BEGIN_TOUR, userId);
+       for(NotificationDTO notificationDTO : notificationDTOS){
+           System.out.println("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new");
+           NotiData notiData = new NotiData().builder()
+                   .data(tour)
+                   .type(NotificationType.BEGIN_TOUR)
+                   .notification(notificationDTO).build();
+           simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+       }
        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
    }
 
@@ -101,7 +110,14 @@ public class TourController {
     public ResponseEntity<?> endTour(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.endTour(id, userId);
-        tourService.notificationTourMember(tour, NotificationType.END_TOUR, userId);
+        List<NotificationDTO> notificationDTOS = tourService.notificationTourMember(tour, NotificationType.END_TOUR, userId);
+        for(NotificationDTO notificationDTO : notificationDTOS){
+            NotiData notiData = new NotiData().builder()
+                    .data(tour)
+                    .type(NotificationType.END_TOUR)
+                    .notification(notificationDTO).build();
+            simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+        }
         return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
     }
 
