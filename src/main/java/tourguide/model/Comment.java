@@ -24,7 +24,7 @@ public class Comment extends TimeStamps{
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="postId", referencedColumnName = "id")
+    @JoinColumn(name="postId", referencedColumnName = "id", nullable = false)
     private Post post;
 
     private Boolean isDelete;

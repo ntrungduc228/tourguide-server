@@ -10,12 +10,14 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.*;
 import tourguide.payload.MemberDTO;
+import tourguide.payload.NotificationDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.payload.TourDTO;
 import tourguide.service.NotificationService;
 import tourguide.service.TourService;
 import tourguide.utils.JwtUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -92,7 +94,15 @@ public class TourController {
    public ResponseEntity<?> beginTour(@PathVariable Long id, HttpServletRequest request){
        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        Tour tour = tourService.beginTour(id, userId);
-       tourService.notificationTourMember(tour, NotificationType.BEGIN_TOUR, userId);
+       List<NotificationDTO> notificationDTOS = tourService.notificationTourMember(tour, NotificationType.BEGIN_TOUR, userId);
+       for(NotificationDTO notificationDTO : notificationDTOS){
+           System.out.println("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new");
+           NotiData notiData = new NotiData().builder()
+                   .data(tour)
+                   .type(NotificationType.BEGIN_TOUR)
+                   .notification(notificationDTO).build();
+           simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+       }
        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
    }
 
@@ -101,7 +111,14 @@ public class TourController {
     public ResponseEntity<?> endTour(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.endTour(id, userId);
-        tourService.notificationTourMember(tour, NotificationType.END_TOUR, userId);
+        List<NotificationDTO> notificationDTOS = tourService.notificationTourMember(tour, NotificationType.END_TOUR, userId);
+        for(NotificationDTO notificationDTO : notificationDTOS){
+            NotiData notiData = new NotiData().builder()
+                    .data(tour)
+                    .type(NotificationType.END_TOUR)
+                    .notification(notificationDTO).build();
+            simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+        }
         return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
     }
 
@@ -136,6 +153,33 @@ public class TourController {
     public ResponseEntity<?> joinRoom(@PathVariable Long id, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.joinRoom(id, userId);
+        if(tour.getRooms() != null){
+            List<NotificationDTO> notificationDTOS = new ArrayList<>();
+
+            for(Room room :tour.getRooms()){
+                if(room.getRoomUser().getRole() == Role.TOURIST_GUIDE && room.getRoomUser().getId() != userId){
+                    NotificationDTO notificationDTO = new NotificationDTO().builder()
+                            .isRead(false)
+                            .receiverId(room.getRoomUser().getId())
+                            .creatorId(userId)
+                            .content(String.valueOf(NotificationType.JOIN_ROOM))
+                            .build();
+                    NotificationDTO notification = notificationService.createNotification(notificationDTO);
+                    notificationDTOS.add(notification);
+                }
+            }
+
+            for(NotificationDTO notificationDTO : notificationDTOS){
+                NotiData notiData = new NotiData().builder()
+                        .data(tour)
+                        .type(NotificationType.END_TOUR)
+                        .notification(notificationDTO).build();
+                simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+            }
+
+        }
+
+
         return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 
@@ -146,9 +190,11 @@ public class TourController {
 
         Tour tour = tourService.approveMember(id, memberDTO);
         for(Long memberId : memberDTO.getUserIds()){
-            notificationService.notify(memberId, userId, NotificationType.APPROVE_ROOM);
-            simpMessagingTemplate.convertAndSend("/topic/room/" + memberId + "/add", tour);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + memberId + "/approve", tour);
+            NotificationDTO notificationDTO =  notificationService.notify(memberId, userId, NotificationType.APPROVE_ROOM);
         }
+        simpMessagingTemplate.convertAndSend("/topic/room/" + userId + "/approve", tour);
+
         return new ResponseEntity<>(tour, HttpStatus.OK);
     }
 

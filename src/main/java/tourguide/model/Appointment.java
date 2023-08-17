@@ -25,8 +25,10 @@ public class Appointment extends TimeStamps{
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<Attendance> attendances;
 
+    @Column(nullable = false)
     private String address;
 
     private String content;
+
     private LocalDateTime time;
 }

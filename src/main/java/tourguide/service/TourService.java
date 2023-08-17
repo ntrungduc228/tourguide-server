@@ -35,8 +35,7 @@ public class TourService {
     @Autowired
     NotificationService notificationService;
 
-    @Autowired
-    SimpMessagingTemplate simpMessagingTemplate;
+
 
     public List<Tour> getListTourByUserId(Long userId){
         List<Tour> tours = new ArrayList<>();
@@ -52,14 +51,19 @@ public class TourService {
         return tours;
     }
 
-    public void notificationTourMember(Tour tour, NotificationType type, Long creatorId){
+//    public Tour getCurTour(Long userId){
+//
+//    }
+
+    public List<NotificationDTO> notificationTourMember(Tour tour, NotificationType type, Long creatorId){
         System.out.println("tour size " + tour.getId() + " " + tour.getRooms().size());
+        List<NotificationDTO> notifications = new ArrayList<>();
         if(tour.getRooms() == null || tour.getRooms().size() == 0){
-            return;
+            return new ArrayList<>();
         }
 
         for(Room room : tour.getRooms()){
-            if(room.getRoomUser().getId() != creatorId){
+//            if(room.getRoomUser().getId() != creatorId){
                 NotificationDTO notificationDTO = new NotificationDTO().builder()
                         .isRead(false)
                         .receiverId(room.getRoomUser().getId())
@@ -67,11 +71,12 @@ public class TourService {
                         .content(String.valueOf(type))
                         .build();
                 NotificationDTO notification = notificationService.createNotification(notificationDTO);
-                simpMessagingTemplate.convertAndSend("/topic/noti/" + room.getRoomUser().getId() + "/new", notification);
-
-            }
+//                simpMessagingTemplate.convertAndSend("/topic/noti/" + room.getRoomUser().getId() + "/new", notification);
+                notifications.add(notification);
+//            }
 
         }
+        return notifications;
 
     }
 
@@ -355,7 +360,10 @@ public class TourService {
         Tour tour = findById(id);
         List<User> users = new ArrayList<>();
         for(Room room:tour.getRooms()){
-            users.add(room.getRoomUser());
+            if(room.getIsApproved()){
+                users.add(room.getRoomUser());
+
+            }
         }
         return users;
     }

@@ -20,12 +20,12 @@ public class Attendance extends TimeStamps{
     @JoinColumn(name="userId", referencedColumnName = "id")
     private User user;
 
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="appointmentId", referencedColumnName = "id")
     private Appointment appointment;
 
+    @Column(nullable = false)
     private Boolean isAttend;
 
 }

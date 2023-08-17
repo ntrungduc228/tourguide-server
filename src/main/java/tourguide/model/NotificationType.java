@@ -7,6 +7,7 @@ public enum NotificationType {
     END_TOUR,
     LIKE_POST,
     ADD_ROOM,
+    JOIN_ROOM,
     APPROVE_ROOM,
     NEW_APPOINTMENT
 }

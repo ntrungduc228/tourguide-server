@@ -39,7 +39,7 @@ public class NotificationService {
         return notificationDTO;
     }
 
-    public void notify(Long receiverId, Long creatorId, NotificationType type){
+    public NotificationDTO notify(Long receiverId, Long creatorId, NotificationType type){
         NotificationDTO notificationDTO = new NotificationDTO().builder()
                 .isRead(false)
                 .receiverId(receiverId)
@@ -48,6 +48,7 @@ public class NotificationService {
                 .build();
         NotificationDTO notification = createNotification(notificationDTO);
         simpMessagingTemplate.convertAndSend("/topic/noti/" + receiverId + "/new", notification);
+        return notification;
     }
 
     public NotificationDTO createNotification(NotificationDTO notificationDTO) {
