@@ -112,7 +112,10 @@ public class TourController {
                    .type(NotificationType.BEGIN_TOUR)
                    .notification(notificationDTO).build();
            simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+           simpMessagingTemplate.convertAndSend("/topic/tours/" + notificationDTO.getReceiver().getId() + "/update", tour);
        }
+       simpMessagingTemplate.convertAndSend("/topic/tours/" + userId + "/update", tour);
+
        return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
    }
 
@@ -128,7 +131,10 @@ public class TourController {
                     .type(NotificationType.END_TOUR)
                     .notification(notificationDTO).build();
             simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+            simpMessagingTemplate.convertAndSend("/topic/tours/" + notificationDTO.getReceiver().getId() + "/update", tour);
         }
+        simpMessagingTemplate.convertAndSend("/topic/tours/" + userId + "/update", tour);
+
         return new ResponseEntity<>(new ResponseDTO(tour), HttpStatus.OK);
     }
 
