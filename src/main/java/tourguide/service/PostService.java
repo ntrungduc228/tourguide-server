@@ -139,14 +139,14 @@ public class PostService {
         return postsReturn;
     }
 
-    public PostDTO deletePost(Long postId, Long userId){
+    public Post deletePost(Long postId, Long userId){
         Post post =  findById(postId);
         if(post.getUser().getId() != userId){
             throw new BadRequestException("Không thể xóa post này");
         }
         post.setIsDelete(true);
         Post newPost = postRepository.save(post);
-        return buildPostReturn(newPost);
+        return newPost;
     }
 
     public PostDTO likePost(Long postId, Long userId, Integer like){

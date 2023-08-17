@@ -19,6 +19,10 @@ public class Appointment extends TimeStamps{
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name="userId", referencedColumnName = "id")
+    private User creator;
+
+    @ManyToOne
     @JoinColumn(name="tourId", referencedColumnName = "id")
     private Tour tour;
 

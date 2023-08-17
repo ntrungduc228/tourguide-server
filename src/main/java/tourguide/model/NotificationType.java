@@ -9,5 +9,7 @@ public enum NotificationType {
     ADD_ROOM,
     JOIN_ROOM,
     APPROVE_ROOM,
-    NEW_APPOINTMENT
+    NEW_APPOINTMENT,
+    UPDATE_TOUR,
+    UPDATE_APPOINTMENT
 }

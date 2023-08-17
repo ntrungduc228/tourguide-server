@@ -83,7 +83,13 @@ public class AppointmentController {
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> updateAttendance(@RequestBody AppointmentDTO appointmentDTO, HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        Appointment appointmentDTO1 = appointmentService.updateAttendance(appointmentDTO);
+        if(appointmentDTO1.getAttendances() != null){
+            for(Attendance attendance : appointmentDTO1.getAttendances()){
+                simpMessagingTemplate.convertAndSend("/topic/appointment/" + attendance.getUser().getId() + "/new", appointmentDTO1);
 
-        return new ResponseEntity<>(new ResponseDTO((appointmentService.updateAttendance(appointmentDTO))), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(new ResponseDTO((appointmentDTO1)), HttpStatus.OK);
     }
 }

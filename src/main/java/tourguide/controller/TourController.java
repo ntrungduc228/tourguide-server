@@ -63,9 +63,19 @@ public class TourController {
 
    @PatchMapping("{id}")
    @PreAuthorize("hasRole('TOURIST_GUIDE')")
-    public ResponseEntity<?> updateTour(@PathVariable Long id, @RequestBody TourDTO tourDTO){
+    public ResponseEntity<?> updateTour(@PathVariable Long id, @RequestBody TourDTO tourDTO, HttpServletRequest request){
+       Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Tour tour = tourService.updateTour(id, tourDTO);
         if(tour.getRooms() != null){
+            List<NotificationDTO> notificationDTOS = tourService.notificationTourMember(tour, NotificationType.UPDATE_TOUR, userId);
+            for(NotificationDTO notificationDTO : notificationDTOS){
+                NotiData notiData = new NotiData().builder()
+                        .data(tour)
+                        .type(NotificationType.UPDATE_TOUR)
+                        .notification(notificationDTO).build();
+                simpMessagingTemplate.convertAndSend("/topic/noti/" + notificationDTO.getReceiver().getId() + "/new", notiData);
+            }
+
             for(Room room : tour.getRooms()){
 //                simpMessagingTemplate.convertAndSend("/topic/noti/" + room.getRoomUser().getId() + "/update", tour);
                 simpMessagingTemplate.convertAndSend("/topic/tours/" + room.getRoomUser().getId() + "/update", tour);
