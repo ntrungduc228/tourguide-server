@@ -1,6 +1,7 @@
 package tourguide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import tourguide.exception.NotFoundException;
 import tourguide.model.*;
 import tourguide.payload.*;
 import tourguide.repository.DestinationRepository;
+import tourguide.repository.RoomRepository;
 import tourguide.repository.TourRepository;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,9 @@ public class TourService {
 
     @Autowired
     DestinationRepository destinationRepository;
+
+    @Autowired
+    RoomRepository roomRepository;
 
     @Autowired
     UserService userService;
@@ -80,6 +85,19 @@ public class TourService {
 
     }
 
+    public Boolean checkUserIsInOtherTourProgress(Long userId){
+        User user = userService.findById(userId);
+        List<Room> rooms = roomRepository.findByRoomUser(user);
+        if(rooms.size() > 0){
+            for(Room room : rooms){
+                if(room.getRoomTour().getIsProgress()){
+                    throw new BadRequestException(user.getFullName() + "đang có một tour khác đang diễn ra");
+                }
+            }
+        }
+        return false;
+    }
+
     public Tour beginTour(Long tourId, Long userId){
         List<Tour> tours = getListTourByUserId(userId);
         if(tours.size() == 0){
@@ -90,6 +108,8 @@ public class TourService {
                 throw new BadRequestException("Bạn đang có tour khác diễn ra");
             }
         }
+
+
         Tour newTour = null;
         for (Tour tour: tours){
             if(tour.getId() == tourId){
@@ -100,6 +120,11 @@ public class TourService {
         if(newTour == null){
             throw new NotFoundException("Không tìm thấy tour");
         }
+
+        for(Room room : newTour.getRooms()){
+            checkUserIsInOtherTourProgress(room.getRoomUser().getId());
+        }
+
         newTour.setIsProgress(true);
         return tourRepository.save(newTour);
     }
@@ -151,6 +176,13 @@ public class TourService {
         return newTour;
     }
 
+    @Transactional
+    public void deleteOldListDes(Tour tour){
+        if(tour.getDestinations() != null && tour.getDestinations().size() > 0){
+            destinationRepository.deleteAllByTour(tour);
+        }
+    }
+
     public List<Destination> buidListDes(List<DestinationDTO> destinationDTOS, Tour tour){
         if(destinationDTOS == null) return null;
         List<Destination> list = new ArrayList<>();
@@ -160,6 +192,9 @@ public class TourService {
             destination.setAddress(des.getAddress());
             destination.setContent(des.getContent());
             destination.setTour(tour);
+            if(destination.getDepartureTime()!= null && destination.getDepartureTime().isBefore(LocalDateTime.now())){
+//                throw new BadRequestException("Thời gian phải lớn hơn giờ hiện tại");
+            }
             destination.setDepartureTime(des.getDepartureTime());
             list.add(destination);
         }
@@ -174,6 +209,7 @@ public class TourService {
         return opTour.get();
     }
 
+    @Transactional
     public Tour updateTour(Long id, TourDTO tourDTO){
         Tour tour = findById(id);
 
@@ -187,6 +223,7 @@ public class TourService {
 
         if(tourDTO.getDestinations() != null && !tourDTO.getDestinations().isEmpty()){
 
+            deleteOldListDes(tour);
             List<Destination> list = buidListDes(tourDTO.getDestinations(), tour);
             tour.setDestinations(list);
 

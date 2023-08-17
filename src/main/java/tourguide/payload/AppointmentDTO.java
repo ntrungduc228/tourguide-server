@@ -4,6 +4,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import tourguide.model.Tour;
+import tourguide.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
 public class AppointmentDTO {
     private Long id;
 
+    private Long userId;
+    private UserDTO user;
     private Tour tour;
     private Long tourId;
     private List<Long> userIds;

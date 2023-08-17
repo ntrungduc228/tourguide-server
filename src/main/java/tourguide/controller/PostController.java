@@ -70,7 +70,8 @@ public class PostController {
     @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
     public ResponseEntity<?> deletePost(@PathVariable Long id , HttpServletRequest request){
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
-        PostDTO post = postService.deletePost(id, userId);
+        Post post = postService.deletePost(id, userId);
+        simpMessagingTemplate.convertAndSend("/topic/post/" + post.getTour().getId() + "/new", post);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 

@@ -46,6 +46,8 @@ public class AppointmentService {
                 .time(appointment.getTime())
                 .tourId(appointment.getTour().getId())
                 .tour(appointment.getTour())
+                .userId(appointment.getCreator().getId())
+                .user(userService.buildUserDTO(appointment.getCreator()))
                 .build();
         return appointmentDTO;
     }
@@ -62,6 +64,7 @@ public class AppointmentService {
                 .address(appointmentDTO.getAddress())
                 .content(appointmentDTO.getContent())
                 .time(appointmentDTO.getTime())
+                .creator(user)
                 .tour(tourService.findById(appointmentDTO.getTourId()))
                 .build();
         List<Attendance> attendances = new ArrayList<>();
