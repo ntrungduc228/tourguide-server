@@ -64,37 +64,21 @@ public class CommentService {
         comment.setParentId(commentDTO.getParentId());
 
         Comment newComment= commentRepository.save(comment);
-        if(commentDTO.getParentId()!= null){
-            notificationService.notify(post.getUser().getId(), userId, NotificationType.REPLY_COMMENT);
-        }else{
-            notificationService.notify(post.getUser().getId(), userId, NotificationType.COMMENT);
+        if(comment.getUser().getId() != comment.getPost().getUser().getId()){
+            if(commentDTO.getParentId()!= null){
+                notificationService.notify(post.getUser().getId(), userId, NotificationType.REPLY_COMMENT);
+            }else{
+                notificationService.notify(post.getUser().getId(), userId, NotificationType.COMMENT);
+            }
         }
+
 
         return buildCommentDTO(newComment);
     }
 
     public List<CommentDTO> getCommentByPosts(Long postId){
         System.out.println("vo dayt roi bha");
-        List<Comment> comments = commentRepository.findByPostIdOrderByLastModifiedDateAsc(postId);
-        List<Comment> commentsRemove = new ArrayList<>();
-        for (Comment comment : comments){
-            if(comment.getIsDelete()){
-                commentsRemove.add(comment);
-            }
-        }
-
-        for(Comment comment : commentsRemove){
-            for(Comment commentChild : comments){
-                if(commentChild.getParentId() == comment.getId()){
-                    commentsRemove.add(commentChild);
-                }
-            }
-        }
-
-        for(Comment comment :  commentsRemove){
-            comments.remove(comment);
-        }
-
+        List<Comment> comments = commentRepository.findByPostIdAndIsDeleteOrderByLastModifiedDateAsc(postId, false);
 
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(Comment comment: comments){

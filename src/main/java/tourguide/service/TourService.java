@@ -51,6 +51,10 @@ public class TourService {
         return tours;
     }
 
+//    public Tour getCurTour(Long userId){
+//
+//    }
+
     public List<NotificationDTO> notificationTourMember(Tour tour, NotificationType type, Long creatorId){
         System.out.println("tour size " + tour.getId() + " " + tour.getRooms().size());
         List<NotificationDTO> notifications = new ArrayList<>();
@@ -356,7 +360,10 @@ public class TourService {
         Tour tour = findById(id);
         List<User> users = new ArrayList<>();
         for(Room room:tour.getRooms()){
-            users.add(room.getRoomUser());
+            if(room.getIsApproved()){
+                users.add(room.getRoomUser());
+
+            }
         }
         return users;
     }

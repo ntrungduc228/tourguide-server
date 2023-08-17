@@ -47,8 +47,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (userFind.isEmpty()) {
             System.out.println("User not found in database");
-            throw new UnAuthorizeException("Unauthorized!!!");
+            throw new NotFoundException("Unauthorized!!!");
 
+//            return null;
         }
         return UserDetailsImpl.build(userFind.get());
     }

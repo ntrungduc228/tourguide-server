@@ -108,14 +108,16 @@ public class PostService {
                     filesReturn,
                     post.getIsDelete(),
                     post.getTour().getId(), post.getUser().getId(),
-                    new UserDTO().builder()
-                            .id(post.getUser().getId())
-                            .email(post.getUser().getEmail())
-                            .role(post.getUser().getRole())
-                            .phone(post.getUser().getPhone())
-                            .address(post.getUser().getAddress())
-                            .avatar(post.getUser().getAvatar())
-                            .build(),
+                    userService.buildUserDTO(post.getUser()),
+//                    new UserDTO().builder()
+//                            .id(post.getUser().getId())
+//                            .email(post.getUser().getEmail())
+//                            .role(post.getUser().getRole())
+//                            .fullName(post.getUser().getFullName())
+//                            .phone(post.getUser().getPhone())
+//                            .address(post.getUser().getAddress())
+//                            .avatar(post.getUser().getAvatar())
+//                            .build(),
                     post.getLikes(),
                     commentSize,
                     post.getCreatedAt(), post.getLastModifiedDate());

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostIdOrderByLastModifiedDateAsc(Long postId);
+    List<Comment> findByPostIdAndIsDeleteOrderByLastModifiedDateAsc(Long postId, Boolean isDelete);
 }

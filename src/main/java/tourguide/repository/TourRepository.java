@@ -3,6 +3,9 @@ package tourguide.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import tourguide.model.Tour;
 
-public interface TourRepository extends JpaRepository<Tour, Long> {
+import java.util.List;
+import java.util.Optional;
 
+public interface TourRepository extends JpaRepository<Tour, Long> {
+    List<Tour> findByIsProgress(Boolean isProgress);
 }
