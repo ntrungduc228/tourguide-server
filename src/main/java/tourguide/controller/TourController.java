@@ -37,7 +37,7 @@ public class TourController {
    @GetMapping("own")
    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
    public ResponseEntity<?> getListToursByUserId(HttpServletRequest request){
-//       System.out.println("goi tour ");
+       System.out.println("goi tour ");
        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
        return new ResponseEntity<>(new ResponseDTO(tourService.getListTourByUserId(userId)), HttpStatus.OK);
    }
