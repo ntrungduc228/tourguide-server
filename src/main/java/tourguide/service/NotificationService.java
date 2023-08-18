@@ -3,6 +3,7 @@ package tourguide.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tourguide.model.Notification;
 import tourguide.model.NotificationType;
 import tourguide.model.User;
@@ -24,6 +25,17 @@ public class NotificationService {
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
+
+    @Transactional
+    public Boolean readAllNotification(Long userId){
+        User user = userService.findById(userId);
+        List<Notification> notifications = notificationRepository.findByReceiverAndIsRead(user, false);
+        for(Notification notification : notifications){
+            notification.setIsRead(true);
+        }
+        notificationRepository.saveAll(notifications);
+        return true;
+    }
 
     public NotificationDTO buildNotificationDTO(Notification notification){
         if(notification == null) return null;

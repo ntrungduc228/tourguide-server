@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tourguide.payload.ResponseDTO;
@@ -32,4 +33,13 @@ public class NotificationController {
         simpMessagingTemplate.convertAndSend("/topic/messagess123", "test cai");
         return new ResponseEntity<>(new ResponseDTO(notificationService.getNotificationsByUserId(userId)), HttpStatus.OK);
     }
+
+    @PatchMapping("")
+    @PreAuthorize("hasRole('TOURIST') or hasRole('TOURIST_GUIDE')")
+    public ResponseEntity<?> readAllNotification(HttpServletRequest request){
+        Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
+        simpMessagingTemplate.convertAndSend("/topic/noti" + userId + "/update", userId);
+        return new ResponseEntity<>(new ResponseDTO(notificationService.readAllNotification(userId)), HttpStatus.OK);
+    }
+
 }
