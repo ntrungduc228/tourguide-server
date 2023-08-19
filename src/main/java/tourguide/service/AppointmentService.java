@@ -72,20 +72,34 @@ public class AppointmentService {
                 .tour(tourService.findById(appointmentDTO.getTourId()))
                 .build();
         List<Attendance> attendances = new ArrayList<>();
-        System.out.println("a " + appointmentDTO.getUserIds().size());
-        if(appointmentDTO.getUserIds()!= null && appointmentDTO.getUserIds().size() > 0){
-            for(Long receiverId : appointmentDTO.getUserIds()){
-                Attendance attendance = new Attendance();
-                attendance.setIsAttend(false);
-                attendance.setUser(userService.findById(receiverId));
-                attendance.setAppointment(appointment);
-                attendances.add(attendance);
+        if(appointmentDTO.getInviteAll()){
+            Tour tour = tourService.findById(appointmentDTO.getTourId());
+            for(Room room : tour.getRooms()){
+                if(room.getRoomUser().getId() != userId){
+                    Attendance attendance = new Attendance();
+                    attendance.setIsAttend(false);
+                    attendance.setUser(room.getRoomUser());
+                    attendance.setAppointment(appointment);
+                    attendances.add(attendance);
+                }
+            }
+        }else {
+            System.out.println("a " + appointmentDTO.getUserIds().size());
+            if(appointmentDTO.getUserIds()!= null && appointmentDTO.getUserIds().size() > 0){
+                for(Long receiverId : appointmentDTO.getUserIds()){
+                    Attendance attendance = new Attendance();
+                    attendance.setIsAttend(false);
+                    attendance.setUser(userService.findById(receiverId));
+                    attendance.setAppointment(appointment);
+                    attendances.add(attendance);
 //                AttendanceDTO attendanceDTO = new AttendanceDTO();
 //                attendanceDTO.setUserId(receiverId);
 ////                attendanceDTO.setAppointmentId(appointment.getId());
 //                attendances.add(createAttendance(attendanceDTO)) ;
+                }
             }
         }
+
         appointment.setAttendances(attendances);
 
         Appointment newAppointment = appointmentRepository.save(appointment);
@@ -129,7 +143,7 @@ public class AppointmentService {
     // get diem hen
     public List<AppointmentDTO> getListAppointmentByTourId(Long tourId){
         Tour tour = tourService.findById(tourId);
-        List<Appointment> appointments = appointmentRepository.findByTour(tour);
+        List<Appointment> appointments = appointmentRepository.findByTourOrderByLastModifiedDateDesc(tour);
         List<AppointmentDTO> appointmentDTOS = new ArrayList<>();
         for(Appointment appointment :appointments){
             appointmentDTOS.add(buildAppointmentDTO(appointment));

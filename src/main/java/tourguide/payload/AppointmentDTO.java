@@ -23,6 +23,7 @@ public class AppointmentDTO {
     private Long tourId;
     private List<Long> userIds;
     private String address;
+    private Boolean inviteAll;
 
     private String content;
     private LocalDateTime time;

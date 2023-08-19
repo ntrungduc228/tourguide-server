@@ -9,12 +9,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tourguide.model.Appointment;
 import tourguide.model.Attendance;
+import tourguide.model.NotiData;
+import tourguide.model.NotificationType;
 import tourguide.payload.AppointmentDTO;
+import tourguide.payload.NotificationDTO;
 import tourguide.payload.PostDTO;
 import tourguide.payload.ResponseDTO;
 import tourguide.service.AppointmentService;
 import tourguide.service.NotificationService;
 import tourguide.utils.JwtUtil;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/appointments")
@@ -38,6 +43,8 @@ public class AppointmentController {
         System.out.println("vooo con");
         Long userId = jwtUtil.getUserId(jwtUtil.getJwtFromRequest(request));
         Appointment appointmentDTO1 = appointmentService.createAppointment(appointmentDTO, userId);
+
+
         if(appointmentDTO1.getAttendances() != null){
             for(Attendance attendance : appointmentDTO1.getAttendances()){
                 simpMessagingTemplate.convertAndSend("/topic/appointment/" + attendance.getUser().getId() + "/new", appointmentDTO1);

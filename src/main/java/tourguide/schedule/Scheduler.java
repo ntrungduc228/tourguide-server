@@ -29,7 +29,7 @@ public class Scheduler {
     @Autowired
     NotificationService notificationService;
 
-    @Scheduled(fixedDelay = 1000 * 15, initialDelay = 3000)
+    @Scheduled(fixedDelay = 1000 * 15*60, initialDelay = 3000)
     public void fixedDelaySch() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date now = new Date();
