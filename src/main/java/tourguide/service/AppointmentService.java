@@ -9,6 +9,9 @@ import tourguide.payload.AttendanceDTO;
 import tourguide.repository.AppointmentRepository;
 import tourguide.repository.AttendanceRepository;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +62,8 @@ public class AppointmentService {
 
     public Appointment createAppointment(AppointmentDTO appointmentDTO, Long userId){
         User user = userService.findById(userId);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        System.out.println(String.format("formatter " + formatter.format(appointmentDTO.getTime())));
         Appointment appointment = new Appointment().builder()
                 .address(appointmentDTO.getAddress())
                 .content(appointmentDTO.getContent())
@@ -165,6 +169,21 @@ public class AppointmentService {
         Appointment newAppointment = appointmentRepository.save(appointment);
 
         return appointment;
+    }
+
+    public List<Appointment> findScheduleAppointment(){
+        List<Appointment> appointments = appointmentRepository.findByTimeGreaterThan(LocalDateTime.now());
+        List<Appointment> appointmentList = new ArrayList<>();
+        for(Appointment appointment: appointments){
+            Duration duration = Duration.between(appointment.getTime(), LocalDateTime.now());
+            if(duration.toMinutes() >= -5){
+                appointmentList.add(appointment);
+
+            }
+
+//            System.out.println(" duration +" + duration.toMinutes() + " "+ formatter.format(destination.getDepartureTime()) );
+        }
+        return appointmentList;
     }
 
 }

@@ -83,12 +83,18 @@ public class UserService {
         return user.get();
     }
 
-    public List<User> findByPhone(String phone) throws Exception {
+    public List<User> findByPhone(String phone, Long userId) throws Exception {
         List<User> users = userRepository.findByPhoneStartingWith(phone);
         if(users.size()==0 ){
             return new ArrayList<>();
         }
-        return users;
+        List<User> userReturn = new ArrayList<>();
+        for(User user: users){
+            if(user.getId() != userId){
+                userReturn.add(user);
+            }
+        }
+        return userReturn;
     }
 
 
